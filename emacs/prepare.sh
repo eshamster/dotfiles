@@ -85,7 +85,7 @@ fi
 
 # ----- Others ----- #
 if [ ! -d ${SITE_LISP} ]; then
-    mkdir ${SITE_LISP} -v
+    mkdir ${SITE_LISP} -vp
 fi
 
 if [ ! -f "${SITE_LISP}/slime-repl-ansi-color.el" ]; then
