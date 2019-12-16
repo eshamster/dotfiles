@@ -266,52 +266,11 @@
 
 (global-set-key (kbd "C-c C-z") 'open-shell-buffer)
 
-;; --- paredit --- ;;
-
-;; (use-package paredit
-;;   :mode (("\\.el\\'" . paredit-mode))
-;;   :bind
-;;   (("C-c f" . paredit-forward-slurp-sexp)
-;;    ("C-c b" . paredit-forward-barf-sexp)
-;;    ("C-h" . paredit-backward-delete)
-;;    ("C-c p" . paredit-backward)
-;;    ("C-c n" . paredit-forward)
-;;    ("C-c m p" . paredit-mode)))
-
 ;; --- ddskk --- ;;
 
 (use-package ddskk
   :bind
   (("C-x C-j" . skk-mode)))
-
-;; --- powerline --- ;;
-
-;; (use-package powerline
-;;   :init
-;;   (set-face-attribute 'mode-line nil
-;;                       :foreground "#fff"
-;;                       :background "Gray20"
-;;                       :bold t
-;;                       :box nil)
-;;   (set-face-attribute 'powerline-active0 nil
-;;                       :foreground "Black"
-;;                       :background "Gray80"
-;;                       :bold t
-;;                       :box nil
-;;                       :inherit 'mode-line)
-;;   (set-face-attribute 'powerline-active1 nil
-;;                       :foreground "White"
-;;                       :background "Gray40"
-;;                       :bold t
-;;                       :box nil
-;;                       :inherit 'mode-line)
-;;   (set-face-attribute 'powerline-active2 nil
-;;                       :foreground "ForestGreen"
-;;                       :background "Gray80"
-;;                       :bold t
-;;                       :box nil
-;;                       :inherit 'mode-line)
-;;   (powerline-default-theme))
 
 ;; --- auto generated --- ;;
 
