@@ -138,10 +138,24 @@
 (let ((envs '("GOROOT" "GOPATH")))
   (exec-path-from-shell-copy-envs envs))
 
+(defun copy-go-function-name ()
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      (let ((regex "func \\(([^()]*)\\)?[^(]*"))
+        (search-backward-regexp regex)
+        (search-forward-regexp regex))
+      (search-backward " ")
+      (call-interactively 'set-mark-command)
+      (search-forward "(")
+      (backward-char)
+      (call-interactively 'kill-ring-save))))
+
 (use-package go-mode
   :bind
   (("M-." . godef-jump)
-   ("M-[" . xref-find-references))
+   ("M-[" . xref-find-references)
+   ("C-c c f" . copy-go-function-name))
   :config
   (setq gofmt-command "goimports"
         c-basic-offset 4
@@ -265,6 +279,18 @@
           (t (shell)))))
 
 (global-set-key (kbd "C-c C-z") 'open-shell-buffer)
+
+;; 
+(defun get-path-from-git-root ()
+  (interactive)
+  (kill-new 
+   (format "%s%s"
+           (replace-regexp-in-string
+            "\n$" "" (shell-command-to-string "git rev-parse --show-prefix 2> /dev/null || true"))
+           (replace-regexp-in-string
+            "<[^<>]*>$" "" (buffer-name)))))
+
+(global-set-key (kbd "C-c c p") 'get-path-from-git-root)
 
 ;; --- ddskk --- ;;
 
