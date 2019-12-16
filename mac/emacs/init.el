@@ -98,6 +98,12 @@
   (("M-x" . smex)
    ("M-X" . smex-major-mode-commands)))
 
+;; --- magit --- ;;
+
+(use-package magit
+  :bind
+  ("C-c g s" . magit-status))
+
 ;; --- perl --- ;;
 
 (defalias 'perl-mode 'cperl-mode)
@@ -291,6 +297,19 @@
             "<[^<>]*>$" "" (buffer-name)))))
 
 (global-set-key (kbd "C-c c p") 'get-path-from-git-root)
+
+;; swap windows (only for 2 windows case)
+(defun swap-windows ()
+  (interactive)
+  (let ((cur-buf (current-buffer)))
+    (other-window 1)
+    (let ((next-buf (current-buffer)))
+      (switch-to-buffer cur-buf)
+      (other-window 1)
+      (switch-to-buffer next-buf)
+      (other-window 1))))
+
+(global-set-key (kbd "C-c s w") 'swap-windows)
 
 ;; --- ddskk --- ;;
 
