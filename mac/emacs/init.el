@@ -16,6 +16,7 @@
 (install-packages '(auto-complete
                     magit
                     markdown-mode
+                    ido-vertical-mode
                     smex
                     web-mode
                     ;; paredit
@@ -86,17 +87,25 @@
 ;; --- ido-mode --- ;;
 
 (use-package ido
+  :bind
+  ("C-x C-f" . ido-find-file)
   :config
   (ido-mode t)
   (ido-everywhere t)
-  (setq ido-enable-flex-mathing t)
-  (setq ffap-machine-p-known 'reject))
+  (setq ido-enable-flex-mathing t
+        ffap-machine-p-known 'reject
+        ido-use-filename-at-point nil))
 
-;; smex
 (use-package smex
   :bind
   (("M-x" . smex)
    ("M-X" . smex-major-mode-commands)))
+
+(use-package ido-vertical-mode
+  :config
+  (ido-vertical-mode t)
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only
+        ido-max-window-height 0.75))
 
 ;; --- magit --- ;;
 
@@ -311,11 +320,30 @@
 
 (global-set-key (kbd "C-c s w") 'swap-windows)
 
+
 ;; --- ddskk --- ;;
 
 (use-package ddskk
   :bind
   (("C-x C-j" . skk-mode)))
+
+(when (fboundp 'skk-mode)
+  (fset 'ido-select-text 'skk-mode))
+
+;; https://gist.github.com/nagae/1354329/cddf65aa89bb52f31434ba1164434a31517fc3c8
+(add-hook 'isearch-mode-hook
+          #'(lambda ()
+              (when (and (boundp 'skk-mode)
+                         skk-mode
+                         skk-isearch-mode-enable)
+                (skk-isearch-mode-setup))))
+
+(add-hook 'isearch-mode-end-hook
+          #'(lambda ()
+              (when (and (featurep 'skk-isearch)
+                         skk-isearch-mode-enable)
+                (skk-isearch-mode-cleanup))))
+
 
 ;; --- auto generated --- ;;
 
@@ -326,7 +354,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk))))
+    (ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
