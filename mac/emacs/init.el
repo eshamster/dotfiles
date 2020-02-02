@@ -84,29 +84,6 @@
 
 (setq eww-search-prefix "https://www.google.com/search?q=")
 
-;; --- ido-mode --- ;;
-
-(use-package ido
-  :bind
-  ("C-x C-f" . ido-find-file)
-  :config
-  (ido-mode t)
-  (ido-everywhere t)
-  (setq ido-enable-flex-mathing t
-        ffap-machine-p-known 'reject
-        ido-use-filename-at-point nil))
-
-(use-package smex
-  :bind
-  (("M-x" . smex)
-   ("M-X" . smex-major-mode-commands)))
-
-(use-package ido-vertical-mode
-  :config
-  (ido-vertical-mode t)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only
-        ido-max-window-height 0.75))
-
 ;; --- magit --- ;;
 
 (use-package magit
@@ -320,6 +297,28 @@
 
 (global-set-key (kbd "C-c s w") 'swap-windows)
 
+;; --- ido-mode --- ;;
+
+(use-package ido
+  :bind
+  ("C-x C-f" . ido-find-file)
+  :config
+  (ido-mode t)
+  (ido-everywhere t)
+  (setq ido-enable-flex-mathing t
+        ffap-machine-p-known 'reject
+        ido-use-filename-at-point nil))
+
+(use-package smex
+  :bind
+  (("M-x" . smex)
+   ("M-X" . smex-major-mode-commands)))
+
+(use-package ido-vertical-mode
+  :config
+  (ido-vertical-mode t)
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only
+        ido-max-window-height 0.75))
 
 ;; --- ddskk --- ;;
 
