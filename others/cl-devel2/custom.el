@@ -15,6 +15,22 @@
   (setq ido-vertical-define-keys 'C-n-and-C-p-only
                 ido-max-window-height 0.75))
 
+;; --- recentf --- ;;
+
+(setq recentf-save-file "~/work/lisp/.recentf"
+      recentf-max-saved-items 1000
+      recentf-auto-cleanup 'never
+      recentf-exclude '("/recentf" "COMMIT_EDITING" "/.?TAGS" "ido\\.last")
+      recentf-auto-save-timer (run-with-idle-timer 30 t 'recentf-save-list))
+
+(defun ido-recentf ()
+  (interactive)
+  (find-file (ido-completing-read "Find recent file: " recentf-list)))
+
+(global-set-key (kbd "C-c r r") 'ido-recentf)
+
+(recentf-mode 1)
+
 ;; --- projectile --- ;;
 
 (use-package projectile
