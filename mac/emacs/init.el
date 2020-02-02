@@ -30,6 +30,7 @@
                     company
                     company-go
                     go-errcheck ; require: go get -u github.com/kisielk/errcheck
+                    projectile
                     ))
 
 (exec-path-from-shell-initialize)
@@ -343,6 +344,12 @@
                          skk-isearch-mode-enable)
                 (skk-isearch-mode-cleanup))))
 
+;; --- projectile --- ;;
+
+(use-package projectile
+  :init
+  (projectile-mode t)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 ;; --- auto generated --- ;;
 
@@ -353,7 +360,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk))))
+    (projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
