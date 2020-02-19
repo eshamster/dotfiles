@@ -37,3 +37,26 @@
   :init
   (projectile-mode t)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
+;; --- others --- ;;
+
+(global-linum-mode)
+(setq linum-format "%3d|")
+
+(defun copy-package-name ()
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      (beginning-of-buffer)
+      (search-forward "defpackage")
+      (search-forward " ")
+      (kill-new (thing-at-point 'symbol)))))
+
+(defun copy-symbol-at-point ()
+  (interactive)
+  (kill-new (thing-at-point 'symbol)))
+
+(use-package lisp-mode
+  :bind
+  (("C-c c p" . copy-package-name)
+   ("C-c c s" . copy-symbol-at-point)))
