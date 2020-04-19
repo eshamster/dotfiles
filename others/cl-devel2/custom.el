@@ -43,6 +43,21 @@
 (global-linum-mode)
 (setq linum-format "%3d|")
 
+(global-set-key (kbd "M-o") 'other-window)
+
+;; swap windows (only for 2 windows case)
+(defun swap-windows ()
+  (interactive)
+  (let ((cur-buf (current-buffer)))
+    (other-window 1)
+    (let ((next-buf (current-buffer)))
+      (switch-to-buffer cur-buf)
+      (other-window 1)
+      (switch-to-buffer next-buf)
+      (other-window 1))))
+
+(global-set-key (kbd "C-c s w") 'swap-windows)
+
 (defun copy-package-name ()
   (interactive)
   (save-window-excursion
