@@ -158,9 +158,16 @@
 
 ;; - protobuf - ;;
 
+(defun format-protobuf-hook ()
+  (when (eq major-mode 'protobuf-mode)
+    (shell-command (concat "clang-format -i " (buffer-file-name)))
+    (revert-buffer t t t)))
+
 (use-package protobuf-mode
   :init
-  (setq c-basic-offset 4))
+  (setq c-basic-offset 4)
+  :config
+  (add-hook 'after-save-hook 'format-protobuf-hook))
 
 ;; --- arkテンプレート用 --- ;;
 
