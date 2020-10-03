@@ -5,9 +5,12 @@
 
 ;; ----- Install packages ----- ;;
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(package-initialize)
+(eval-and-compile
+  (customize-set-variable
+   'package-archives '(("org"   . "https://orgmode.org/elpa/")
+                       ("melpa" . "https://melpa.org/packages/")
+                       ("gnu"   . "https://elpa.gnu.org/packages/")))
+  (package-initialize))
 
 (defun install-packages (packages)
   (let ((refreshed nil))
@@ -24,7 +27,11 @@
                     paredit
                     ido-vertical-mode
                     smex
-                    use-package))
+                    use-package
+                    yasnippet
+                    leaf
+                    leaf-convert
+                    company))
 
 ;; ----- keybind ----- ;;
 
@@ -51,32 +58,33 @@
 (set-face-foreground 'font-lock-comment-face "#ee0909")
 (show-paren-mode t)
 (global-linum-mode t)
+(setq visible-bell t)
 
 (setq initial-frame-alist
       '((top . 83) (left . 178) (width . 175) (height . 54)))
 
 ;; -- ido-mode -- ;;
 
-(use-package ido
-  :bind
-  ("C-x C-f" . ido-find-file)
+(leaf ido
+  :bind (("C-x C-f" . ido-find-file))
   :config
-  (ido-mode t)
-  (ido-everywhere t)
-  (setq ido-enable-flex-mathing t
-        ffap-machine-p-known 'reject
-        ido-use-filename-at-point nil))
+  (with-eval-after-load 'ido
+    (ido-mode t)
+    (ido-everywhere t)
+    (setq ido-enable-flex-mathing t
+          ffap-machine-p-known 'reject
+          ido-use-filename-at-point nil)))
 
-(use-package smex
-  :bind
-  (("M-x" . smex)
-   ("M-X" . smex-major-mode-commands)))
+(leaf smex
+  :bind (("M-x" . smex)
+         ("M-X" . smex-major-mode-commands)))
 
-(use-package ido-vertical-mode
+(leaf ido-vertical-mode
+  :require t
+  :setq ((ido-vertical-define-keys quote C-n-and-C-p-only)
+         (ido-max-window-height . 0.75))
   :config
-  (ido-vertical-mode t)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only
-        ido-max-window-height 0.75))
+  (ido-vertical-mode t))
 
 ;; -- -- ;;
 
@@ -118,6 +126,23 @@
 
 (recentf-mode 1)
 
+;; --- C# --- ;;
+
+(install-packages '(omnisharp))
+
+(eval-after-load
+    'company
+  '(add-to-list 'company-backends 'company-omnisharp))
+
+(leaf csharp-mode
+  :hook ((csharp-mode-hook . omnisharp-mode)
+         (csharp-mode-hook . company-mode))
+  :custom ((tab-width . 4)))
+
+;; --- Shader --- ;;
+
+(install-packages '(shader-mode))
+
 ;; --- markdown --- ;;
 
 (defun split-markdown-code ()
@@ -139,6 +164,21 @@
   (("C-c m b" . markdown-insert-bold)
    ("C-c m s" . split-markdown-code)))
 
+;; --- yasnippet --- ;;
+
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :bind (:map yas-minor-mode-map
+              ("C-c y i" . yas-insert-snippet)
+              ("C-c y n" . yas-new-snippet)
+              ("C-c y v" . yas-visit-snippet-file)
+              ("C-c y l" . yas-describe-tables)
+              ("C-c y g" . yas-reload-all))
+  :config
+  (yas-global-mode 1)
+  (setq yas-prompt-functions '(yas-ido-prompt)))
+
 ;; ----- Other libraries ----- ;;
 
 ;; display the directory name of the file when files that have a same name are opened
@@ -158,10 +198,11 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ido-vertical-mode use-package w3m smex paredit markdown-mode magit auto-complete))))
+    (shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode use-package w3m smex paredit markdown-mode magit auto-complete))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'downcase-region 'disabled nil)
