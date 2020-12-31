@@ -31,7 +31,7 @@
                     company-go
                     go-errcheck ; require: go get -u github.com/kisielk/errcheck
                     projectile
-                    ))
+                    leaf))
 
 (exec-path-from-shell-initialize)
 
@@ -54,7 +54,8 @@
         ("C-c s s" . replace-string)
         ("M-*" . pop-tag-mark)
         ("M-o" . other-window)
-        ("C-c d" . insert-today)))
+        ("C-c d" . insert-today)
+        ("C-c i" . insert-register)))
 
 (defun insert-today ()
   (interactive)
@@ -87,32 +88,61 @@
 
 ;; --- magit --- ;;
 
-(use-package magit
-  :bind
-  ("C-c g s" . magit-status))
+(leaf magit
+  :bind (("C-c g s" . magit-status)))
 
 ;; --- perl --- ;;
 
 (defalias 'perl-mode 'cperl-mode)
 
-(use-package cperl-mode
+(defun copy-perl-package-name ()
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      (beginning-of-buffer)
+      (search-forward " ")
+      (call-interactively 'set-mark-command)
+      (search-forward ";")
+      (backward-char)
+      (call-interactively 'kill-ring-save))))
+
+;; https://journal.lampetty.net/entry/wp/384
+(defun perltidy-region ()
+  "Run perltidy on the current region."
+  (interactive)
+  (save-excursion
+    (shell-command-on-region (point) (mark) "perltidy -q" nil t)))
+
+(defun perltidy-defun ()
+  "Run perltidy on the current defun."
+  (interactive)
+  (save-excursion (mark-defun)
+                  (perltidy-region)))
+
+(leaf cperl-mode
+  :bind ((:cperl-mode-map
+          ("C-c p t" . perltidy-region)
+          ;; "p" is already used as "package"
+          ;; so use "h" (head of buffer) instead.
+          ("C-c c h" . copy-perl-package-name)
+          ("M-." . xref-find-definitions)))
   :mode (("\\.pl\\'" . cperl-mode)
          ("\\.pm\\'" . cperl-mode)
          ("\\.t\\'" . cperl-mode))
   :init
   (add-hook 'cperl-mode-hook 'hs-minor-mode)
   (add-hook 'cperl-mode-hook 'flycheck-mode)
-  :config
-  (setq cperl-indent-level 4
-        cperl-indent-parens-as-block t
-        cperl-indent-subs-specially nil
-        cperl-close-paren-offset -4))
+  :custom
+  ((cperl-indent-level . 4)
+   (cperl-indent-parens-as-block . t)
+   (cperl-indent-subs-specially . nil)
+   (cperl-close-paren-offset . -4)))
 
 ;; --- javascript --- ;;
 
-(use-package js-mode
-  :bind
-  (("M-." . xref-find-definitions)))
+(leaf js-mode
+  :bind ((:js-mode-map
+          ("M-." . xref-find-definitions))))
 
 ;; --- web-mode --- ;;
 
@@ -139,20 +169,23 @@
         (search-backward-regexp regex)
         (search-forward-regexp regex))
       (search-backward " ")
+      (forward-char)
       (call-interactively 'set-mark-command)
       (search-forward "(")
       (backward-char)
       (call-interactively 'kill-ring-save))))
 
-(use-package go-mode
+(leaf go-mode
   :bind
-  (("M-." . godef-jump)
-   ("M-[" . xref-find-references)
-   ("C-c c f" . copy-go-function-name))
+  ((:go-mode-map
+    ("M-." . godef-jump)
+    ("M-[" . xref-find-references)
+    ("C-c c f" . copy-go-function-name)))
+  :custom
+  ((gofmt-command . "goimports")
+   (c-basic-offset . 4)
+   (tab-width . 4))
   :config
-  (setq gofmt-command "goimports"
-        c-basic-offset 4
-        tab-width 4)
   (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
   (add-hook 'before-save-hook 'gofmt-before-save))
 
@@ -164,9 +197,9 @@
     (revert-buffer t t t)))
 
 (use-package protobuf-mode
-  :init
-  (setq c-basic-offset 4)
   :config
+  (setq c-basic-offset 4
+        require-final-newline t)
   (add-hook 'after-save-hook 'format-protobuf-hook))
 
 ;; --- arkテンプレート用 --- ;;
@@ -305,6 +338,13 @@
 
 (global-set-key (kbd "C-c s w") 'swap-windows)
 
+(defun upcase-after-underbar ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "<[^>]+>" nil t)
+      (replace-match (downcase (match-string 0)) t))))
+
 ;; --- ido-mode --- ;;
 
 (use-package ido
@@ -367,7 +407,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk))))
+    (leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
