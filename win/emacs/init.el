@@ -27,7 +27,6 @@
                     paredit
                     ido-vertical-mode
                     smex
-                    use-package
                     yasnippet
                     leaf
                     leaf-convert
@@ -159,25 +158,23 @@
   (call-interactively 'previous-line)
   (call-interactively 'previous-line))
 
-(use-package markdown-mode
-  :bind
-  (("C-c m b" . markdown-insert-bold)
-   ("C-c m s" . split-markdown-code)))
+(leaf markdown-mode
+  :bind ((:markdown-mode-map
+          ("C-c m b" . markdown-insert-bold)
+          ("C-c m s" . split-markdown-code))))
 
 ;; --- yasnippet --- ;;
 
-(use-package yasnippet
+(leaf yasnippet
   :ensure t
-  :diminish yas-minor-mode
-  :bind (:map yas-minor-mode-map
-              ("C-c y i" . yas-insert-snippet)
-              ("C-c y n" . yas-new-snippet)
-              ("C-c y v" . yas-visit-snippet-file)
-              ("C-c y l" . yas-describe-tables)
-              ("C-c y g" . yas-reload-all))
-  :config
-  (yas-global-mode 1)
-  (setq yas-prompt-functions '(yas-ido-prompt)))
+  :bind ((:yas-minor-mode-map
+          ("C-c y i" . yas-insert-snippet)
+          ("C-c y n" . yas-new-snippet)
+          ("C-c y v" . yas-visit-snippet-file)
+          ("C-c y l" . yas-describe-tables)
+          ("C-c y g" . yas-reload-all)))
+  :custom ((yas-global-mode . 1)
+           (yas-prompt-functions . '(yas-ido-prompt))))
 
 ;; ----- Other libraries ----- ;;
 
@@ -198,7 +195,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode use-package w3m smex paredit markdown-mode magit auto-complete))))
+    (shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode magit auto-complete))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
