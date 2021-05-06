@@ -4,8 +4,8 @@
 ;; install-packages is defined in
 ;; https://github.com/eshamster/docker-cl-devel2/blob/master/init.el
 (install-packages '(use-package
-                     ido-vertical-mode
-                     projectile))
+                    ido-vertical-mode
+                    projectile))
 
 ;; --- ido --- ;;
 
