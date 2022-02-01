@@ -31,9 +31,13 @@
                     company-go
                     go-errcheck ; require: go get -u github.com/kisielk/errcheck
                     projectile
-                    leaf))
+                    leaf
+                    vue-mode
+                    bash-completion))
 
 (exec-path-from-shell-initialize)
+(setq explicit-shell-file-name "/bin/bash")
+(bash-completion-setup)
 
 ;; --- keybind --- ;;
 
@@ -405,9 +409,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cperl-close-paren-offset -4 t)
+ '(cperl-indent-level 4 t)
+ '(cperl-indent-parens-as-block t t)
+ '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   (quote
-    (leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk))))
+   '(bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
