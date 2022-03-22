@@ -33,10 +33,11 @@
                     projectile
                     leaf
                     vue-mode
-                    bash-completion))
+                    bash-completion
+                    git-link
+                    yaml-mode))
 
 (exec-path-from-shell-initialize)
-(setq explicit-shell-file-name "/bin/bash")
 (bash-completion-setup)
 
 ;; --- keybind --- ;;
@@ -179,19 +180,38 @@
       (backward-char)
       (call-interactively 'kill-ring-save))))
 
+(defun go-find-test (test-name dir)
+  (interactive "sTest Name: \nDBase directory: ")
+  (grep-compute-defaults)
+  (rgrep test-name "*_test.go" dir))
+
+(defun goto-go-next-func ()
+  (interactive)
+  (end-of-line)
+  (search-forward-regexp "^func")
+  (beginning-of-line))
+
+(defun goto-go-prev-func ()
+  (interactive)
+  (beginning-of-line)
+  (search-backward-regexp "^func"))
+
 (leaf go-mode
   :bind
   ((:go-mode-map
     ("M-." . godef-jump)
     ("M-[" . xref-find-references)
-    ("C-c c f" . copy-go-function-name)))
+    ("C-c c f" . copy-go-function-name)
+    ("C-c m n" . goto-go-next-func)
+    ("C-c m p" . goto-go-prev-func)))
   :custom
   ((gofmt-command . "goimports")
    (c-basic-offset . 4)
    (tab-width . 4))
   :config
   (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
-  (add-hook 'before-save-hook 'gofmt-before-save))
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (add-hook 'go-mode-hook 'subword-mode))
 
 ;; - protobuf - ;;
 
@@ -269,7 +289,7 @@
 ;; Note: "ls" of OS X doesn't support some options.
 ;;       So use gls instead (require "brew install coreutils")
 (when (and (eq system-type 'darwin))
-  (let ((gls "/usr/local/bin/gls"))
+  (let ((gls "/opt/homebrew/bin/gls"))
     (when (file-exists-p gls)
       (setq insert-directory-program gls))))
 
@@ -359,7 +379,9 @@
   (ido-everywhere t)
   (setq ido-enable-flex-mathing t
         ffap-machine-p-known 'reject
-        ido-use-filename-at-point nil))
+        ido-use-filename-at-point nil
+        ;; https://stackoverflow.com/questions/17986194/emacs-disable-automatic-file-search-in-ido-mode
+        ido-auto-merge-work-directories-length -1))
 
 (use-package smex
   :bind
@@ -414,7 +436,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
