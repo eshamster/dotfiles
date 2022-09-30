@@ -164,6 +164,17 @@
   :init
   (add-hook 'web-mode-hook 'my-web-mode-hook))
 
+;; - company - ;;
+(leaf company-mode
+  :custom
+  ((company-dabbrev-downcase . nil)
+   (company-dabbrev-ignore-case . nil)
+   (company-idle-delay . 0))
+  :hook
+  (go-mode-hook . (lambda ()
+                    (set (make-local-variable 'company-backends)
+                         '(company-dabbrev)))))
+
 ;; - go - ;;
 
 (let ((envs '("GOROOT" "GOPATH")))
