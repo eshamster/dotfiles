@@ -67,6 +67,8 @@
   (interactive)
   (insert (format-time-string "%Y/%m/%d")))
 
+(global-set-key [C-down-mouse-1] nil)
+
 ;; --- Environment --- ;;
 
 (setq scroll-conservatively 100000
