@@ -291,6 +291,31 @@
   (yas-global-mode 1)
   (setq yas-prompt-functions '(yas-ido-prompt)))
 
+;; --- TypeScript --- ;;
+;; https://github.com/eshamster/dotfiles/blob/f5a39c71b013ade45048add19db4998b1cdfd62a/others/react-devel/react-devel.el
+
+(install-packages '(typescript-mode
+                    tide
+                    company
+                    flycheck))
+
+(defun setup-tide-mode ()
+  "Setup function for tide."
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  (company-mode +1)
+  (setq tab-width 2
+        js-indent-level 2
+        typescript-indent-level 2))
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
+
 ;; --- Others --- ;;
 
 ;; mode-line
@@ -465,7 +490,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
