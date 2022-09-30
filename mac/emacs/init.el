@@ -35,7 +35,8 @@
                     vue-mode
                     bash-completion
                     git-link
-                    yaml-mode))
+                    yaml-mode
+                    terraform-mode))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
