@@ -173,7 +173,7 @@
   (interactive)
   (save-window-excursion
     (save-excursion
-      (let ((regex "func \\(([^()]*)\\)?[^(]*"))
+      (let ((regex "^func \\(([^()]*)\\)?[^(]*"))
         (search-backward-regexp regex)
         (search-forward-regexp regex))
       (search-backward " ")
@@ -199,6 +199,18 @@
   (beginning-of-line)
   (search-backward-regexp "^func"))
 
+(defun go-upcase-prev-word ()
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      (let ((prev-subword-mode (if subword-mode 1 -1)))
+        (unwind-protect
+            (progn (subword-mode -1)
+                   (call-interactively 'backward-word)
+                   (subword-mode 1)
+                   (call-interactively 'capitalize-word))
+          (subword-mode prev-subword-mode))))))
+
 (leaf go-mode
   :bind
   ((:go-mode-map
@@ -206,7 +218,8 @@
     ("M-[" . xref-find-references)
     ("C-c c f" . copy-go-function-name)
     ("C-c m n" . goto-go-next-func)
-    ("C-c m p" . goto-go-prev-func)))
+    ("C-c m p" . goto-go-prev-func)
+    ("C-c c u" . go-upcase-prev-word)))
   :custom
   ((gofmt-command . "goimports")
    (c-basic-offset . 4)
