@@ -272,7 +272,9 @@
 
 (use-package vue-mode
   :init
-  (setq js-indent-level 2))
+  (setq js-indent-level 2)
+  :config
+  (add-hook 'vue-mode-hook 'company-mode))
 
 ;; --- yasnippet --- ;;
 
