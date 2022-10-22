@@ -45,7 +45,8 @@
         ("M-*"  . pop-tag-mark)
         ("C-x ;" . comment-region)
         ("C-x :" . uncomment-region)
-        ("C-x C-i"   . indent-region)))
+        ("C-x C-i"   . indent-region)
+        ("M-o" . other-window)))
 
 ;; ----- Environment ----- ;;
 (setq redisplay-dont-pause t
@@ -175,6 +176,11 @@
           ("C-c y g" . yas-reload-all)))
   :custom ((yas-global-mode . 1)
            (yas-prompt-functions . '(yas-ido-prompt))))
+
+;; --- magit --- ;;
+
+(leaf magit
+  :bind (("C-c g s" . magit-status)))
 
 ;; ----- git-bash ----- ;;
 
