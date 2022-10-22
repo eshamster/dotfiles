@@ -176,6 +176,13 @@
   :custom ((yas-global-mode . 1)
            (yas-prompt-functions . '(yas-ido-prompt))))
 
+;; ----- git-bash ----- ;;
+
+;; https://qastack.jp/emacs/22049/git-bash-in-emacs-on-windows
+(prefer-coding-system 'utf-8)
+(setq explicit-shell-file-name "C:/Program Files/Git/bin/bash.exe")
+(setq explicit-bash.exe-args '("--login" "-i"))
+
 ;; ----- Other libraries ----- ;;
 
 ;; display the directory name of the file when files that have a same name are opened
@@ -203,3 +210,4 @@
  ;; If there is more than one, they won't work right.
  )
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
