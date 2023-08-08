@@ -77,7 +77,12 @@
 (set-face-foreground 'font-lock-comment-face "#ee0909")
 (show-paren-mode t)
 (tool-bar-mode 0)
-(global-linum-mode t)
+(if (>= emacs-major-version 29)
+    (global-display-line-numbers-mode 1)
+    (global-linum-mode t))
+(setq linum-delay t)
+(defadvice linum-schedule (around my-linum-schedule () activate)
+  (run-with-idle-timer 0.2 nil #'linum-update-current))
 
 ;; clock
 
