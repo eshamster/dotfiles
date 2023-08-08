@@ -479,6 +479,13 @@
   (projectile-mode t)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
+;; --- for project --- ;;
+
+(defun some-admin-jsx ()
+  (interactive)
+  (js-jsx-mode)
+  (setq js-indent-level 2))
+
 ;; --- auto generated --- ;;
 
 (custom-set-variables
