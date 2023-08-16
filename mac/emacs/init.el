@@ -105,6 +105,12 @@
 (leaf magit
   :bind (("C-c g s" . magit-status)))
 
+;; --- tree-sitter --- ;;
+
+
+(when (>= emacs-major-version 29)
+  (require 'treesit))
+
 ;; --- perl --- ;;
 
 (defalias 'perl-mode 'cperl-mode)
@@ -175,7 +181,7 @@
   :custom
   ((company-dabbrev-downcase . nil)
    (company-dabbrev-ignore-case . nil)
-   (company-idle-delay . 0))
+   (company-idle-delaycompany-idle-delay . 0.1))
   :hook
   (go-mode-hook . (lambda ()
                     (set (make-local-variable 'company-backends)
@@ -318,9 +324,27 @@
         js-indent-level 2
         typescript-indent-level 2))
 
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(defun setup-ts-eglot ()
+  (eglot-ensure)
+  (company-mode +1))
 
-(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
+;; require:
+;; $ brew install tree-sitter
+;; $ npm install -g typescript-language-server typescript
+(if (>= emacs-major-version 29)
+    (progn (when (not (treesit-language-available-p 'typescript))
+             (treesit-install-language-grammar 'typescript))
+           (add-hook 'typescript-ts-mode-hook #'setup-ts-eglot)
+           (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-ts-mode)))
+    (progn (add-hook 'typescript-mode-hook #'setup-tide-mode)
+           (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))))
+
+(defun toggle-ts-mode ()
+  (interactive)
+  (if (eq major-mode 'typescript-mode)
+      (typescript-ts-mode)
+      (when (eq major-mode 'typescript-ts-mode)
+        (typescript-mode))))
 
 ;; --- Others --- ;;
 
