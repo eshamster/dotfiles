@@ -294,6 +294,8 @@
   :ensure t
   :diminish yas-minor-mode ; モードラインに非表示
   :bind (:map yas-minor-mode-map
+              ("<tab>" . nil)
+              ("TAB" . nil)
               ("C-x i i" . yas-insert-snippet)
               ("C-x i n" . yas-new-snippet)
               ("C-x i v" . yas-visit-snippet-file)
