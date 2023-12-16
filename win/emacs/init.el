@@ -30,7 +30,8 @@
                     yasnippet
                     leaf
                     leaf-convert
-                    company))
+                    company
+                    projectile))
 
 ;; ----- keybind ----- ;;
 
@@ -46,7 +47,8 @@
         ("C-x ;" . comment-region)
         ("C-x :" . uncomment-region)
         ("C-x C-i"   . indent-region)
-        ("M-o" . other-window)))
+        ("M-o" . other-window)
+        ("C-c C-w" . count-words)))
 
 ;; ----- Environment ----- ;;
 (setq redisplay-dont-pause t
@@ -57,7 +59,12 @@
 
 (set-face-foreground 'font-lock-comment-face "#ee0909")
 (show-paren-mode t)
-(global-linum-mode t)
+(if (>= emacs-major-version 29)
+    (global-display-line-numbers-mode 1)
+    (global-linum-mode t))
+(setq linum-delay t)
+(defadvice linum-schedule (around my-linum-schedule () activate)
+  (run-with-idle-timer 0.2 nil #'linum-update-current))
 (setq visible-bell t)
 
 (setq initial-frame-alist
@@ -126,6 +133,11 @@
 
 (recentf-mode 1)
 
+;; --- company --- ;;
+
+(leaf company
+  :custom ((company-idle-delay . 0)))
+
 ;; --- C# --- ;;
 
 (install-packages '(omnisharp))
@@ -138,6 +150,38 @@
   :hook ((csharp-mode-hook . omnisharp-mode)
          (csharp-mode-hook . company-mode))
   :custom ((tab-width . 4)))
+
+;; --- TypeScript --- ;;
+;; https://github.com/eshamster/dotfiles/blob/f5a39c71b013ade45048add19db4998b1cdfd62a/others/react-devel/react-devel.el
+
+(install-packages '(typescript-mode
+                    tide
+                    company
+                    flycheck))
+
+(defun setup-tide-mode ()
+  "Setup function for tide."
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  (company-mode +1)
+  (setq tab-width 2
+        js-indent-level 2
+        typescript-indent-level 2))
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(add-hook 'js-mode-hook #'setup-tide-mode)
+
+(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
+
+;; --- CSS --- ;;
+
+(leaf css-mode
+  :custom ((tab-width . 2)
+           (css-indent-offset . 2)))
 
 ;; --- Shader --- ;;
 
@@ -182,6 +226,13 @@
 (leaf magit
   :bind (("C-c g s" . magit-status)))
 
+;; --- projectile -- ;;
+
+(leaf projectile
+  :config
+  (projectile-mode t)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
 ;; ----- git-bash ----- ;;
 
 ;; https://qastack.jp/emacs/22049/git-bash-in-emacs-on-windows
@@ -198,6 +249,28 @@
 (require 'auto-complete-config)
 (ac-config-default)
 
+;; swap windows (only for 2 windows case)
+(defun swap-windows ()
+  (interactive)
+  (let ((cur-buf (current-buffer)))
+    (other-window 1)
+    (let ((next-buf (current-buffer)))
+      (switch-to-buffer cur-buf)
+      (other-window 1)
+      (switch-to-buffer next-buf)
+      (other-window 1))))
+
+(global-set-key (kbd "C-c s w") 'swap-windows)
+
+;; Open shell buffer
+(defun open-shell-buffer ()
+  (interactive)
+  (let ((shell-buf (get-buffer "*shell*")))
+    (cond (shell-buf (pop-to-buffer shell-buf))
+          (t (shell)))))
+
+(global-set-key (kbd "C-c C-z") 'open-shell-buffer)
+
 ;; ----- start server ----- ;;
 (server-start)
 (put 'dired-find-alternate-file 'disabled nil)
@@ -208,7 +281,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode magit auto-complete))))
+    (projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode magit auto-complete))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
