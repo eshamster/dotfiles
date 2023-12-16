@@ -36,7 +36,8 @@
                     bash-completion
                     git-link
                     yaml-mode
-                    terraform-mode))
+                    terraform-mode
+                    dockerfile-mode))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
@@ -76,7 +77,12 @@
 (set-face-foreground 'font-lock-comment-face "#ee0909")
 (show-paren-mode t)
 (tool-bar-mode 0)
-(global-linum-mode t)
+(if (>= emacs-major-version 29)
+    (global-display-line-numbers-mode 1)
+    (global-linum-mode t))
+(setq linum-delay t)
+(defadvice linum-schedule (around my-linum-schedule () activate)
+  (run-with-idle-timer 0.2 nil #'linum-update-current))
 
 ;; clock
 
@@ -98,6 +104,12 @@
 
 (leaf magit
   :bind (("C-c g s" . magit-status)))
+
+;; --- tree-sitter --- ;;
+
+
+(when (>= emacs-major-version 29)
+  (require 'treesit))
 
 ;; --- perl --- ;;
 
@@ -169,7 +181,7 @@
   :custom
   ((company-dabbrev-downcase . nil)
    (company-dabbrev-ignore-case . nil)
-   (company-idle-delay . 0))
+   (company-idle-delaycompany-idle-delay . 0.1))
   :hook
   (go-mode-hook . (lambda ()
                     (set (make-local-variable 'company-backends)
@@ -312,9 +324,27 @@
         js-indent-level 2
         typescript-indent-level 2))
 
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(defun setup-ts-eglot ()
+  (eglot-ensure)
+  (company-mode +1))
 
-(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
+;; require:
+;; $ brew install tree-sitter
+;; $ npm install -g typescript-language-server typescript
+(if (>= emacs-major-version 29)
+    (progn (when (not (treesit-language-available-p 'typescript))
+             (treesit-install-language-grammar 'typescript))
+           (add-hook 'typescript-ts-mode-hook #'setup-ts-eglot)
+           (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-ts-mode)))
+    (progn (add-hook 'typescript-mode-hook #'setup-tide-mode)
+           (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))))
+
+(defun toggle-ts-mode ()
+  (interactive)
+  (if (eq major-mode 'typescript-mode)
+      (typescript-ts-mode)
+      (when (eq major-mode 'typescript-ts-mode)
+        (typescript-mode))))
 
 ;; --- Others --- ;;
 
@@ -478,6 +508,13 @@
   (projectile-mode t)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
+;; --- for project --- ;;
+
+(defun some-admin-jsx ()
+  (interactive)
+  (js-jsx-mode)
+  (setq js-indent-level 2))
+
 ;; --- auto generated --- ;;
 
 (custom-set-variables
@@ -490,7 +527,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
