@@ -32,12 +32,15 @@
                     go-errcheck ; require: go get -u github.com/kisielk/errcheck
                     projectile
                     leaf
+                    leaf-keywords
                     vue-mode
                     bash-completion
                     git-link
                     yaml-mode
                     terraform-mode
-                    dockerfile-mode))
+                    dockerfile-mode
+                    diminish
+                    hydra))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
@@ -99,6 +102,32 @@
 ;; eww
 
 (setq eww-search-prefix "https://www.google.com/search?q=")
+
+;; leaf
+
+(leaf-keywords-init)
+
+;; --- hydra --- ;;
+
+(defhydra hydra-common-replace (:hint nil :exit t :color blue)
+  "replace"
+  ("q" query-replace "query replace")
+  ("s" replace-string "replace string")
+  ("r" replace-regexp "replace regexp"))
+
+(leaf hydra
+  :require t
+  :bind
+  (("C-c :" . (defhydra hydra-common
+                (:hint nil :exit t :color blue)
+                "common"
+                ("c" comment-region "comment")
+                ("u" uncomment-region "uncomment")
+                ("b" revert-buffer "revert buffer")
+                ("e" flycheck-list-errors "flycheck list errors" )
+                ("r" hydra-common-replace/body ">replace"))))
+  :config
+  (setq hydra-is-helpful t))
 
 ;; --- magit --- ;;
 
@@ -290,17 +319,22 @@
 
 ;; --- yasnippet --- ;;
 
-(use-package yasnippet
+(defun refresh-yas-minor-mode ()
+  (interactive)
+  (yas-minor-mode)
+  (yas-minor-mode))
+
+(leaf yasnippet
   :ensure t
   :diminish yas-minor-mode ; モードラインに非表示
-  :bind (:map yas-minor-mode-map
-              ("<tab>" . nil)
-              ("TAB" . nil)
-              ("C-x i i" . yas-insert-snippet)
-              ("C-x i n" . yas-new-snippet)
-              ("C-x i v" . yas-visit-snippet-file)
-              ("C-x i l" . yas-describe-tables)
-              ("C-x i g" . yas-reload-all))
+  :bind (("C-c y" . (defhydra hydra-yasnippet
+                      (:hint nil :exit t :color blue)
+                      "yasnippet"
+                      ("i" yas-insert-snippet "insert snippet")
+                      ("n" yas-new-snippet "new snippet")
+                      ("v" yas-visit-snippet-file "visit snippet file")
+                      ("l" yas-describe-tables "list")
+                      ("r" refresh-yas-minor-mode "refresh yas minor mode"))))
   :config
   (yas-global-mode 1)
   (setq yas-prompt-functions '(yas-ido-prompt)))
@@ -324,7 +358,16 @@
   (company-mode +1)
   (setq tab-width 2
         js-indent-level 2
-        typescript-indent-level 2))
+        typescript-indent-level 2
+        tide-server-max-response-length 204800))
+
+(leaf tide
+  :bind (("C-c t" . (defhydra hydra-tide
+                      (:hint nil :exit t :color blue)
+                      "tide"
+                      ("f" tide-fix "fix")
+                      ("r" tide-references "reference")
+                      ("s" tide-rename-symbol "rename symbol")))))
 
 (defun setup-ts-eglot ()
   (eglot-ensure)
@@ -347,6 +390,13 @@
       (typescript-ts-mode)
       (when (eq major-mode 'typescript-ts-mode)
         (typescript-mode))))
+
+;; --- Python --- ;;
+
+(leaf python-mode
+  :config
+  (add-hook 'python-mode-hook 'company-mode)
+  (add-hook 'python-mode-hook 'flycheck-mode))
 
 ;; --- Others --- ;;
 
@@ -529,7 +579,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
