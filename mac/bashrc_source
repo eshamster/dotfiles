@@ -1,0 +1,137 @@
+export HISTSIZE=20000
+export HISTFILESIZE=20000
+
+export GOPATH=~/program/go
+export PATH=${GOPATH}/bin:~/go/my/bin:${PATH}
+
+if [[ $(uname -m) == "arm64" ]]; then
+    export PATH=/opt/homebrew/bin:${PATH}
+else
+    export PATH=$(echo ${PATH} | sed 's|:/opt/homebrew/bin||g')
+fi
+
+function gb() {
+    git branch --show-current
+}
+
+function GB() {
+    gb
+}
+
+function cgb() {
+    echo -n $(gb) | pbcopy
+}
+
+function git_update() {
+    local current=$(gb)
+    local target=${1:-$current}
+    echo ${target}
+
+    if [ "${target}" != "${current}" ]; then
+        echo "--- checkout target: ${target} ---"
+        git checkout "${target}"
+    fi
+
+    git fetch -p
+    git rebase origin/${target}
+
+    echo "------------------------"
+    git log -1 --date=format-local:'%Y-%m-%d %H:%M:%S'
+    echo -e "\n------------------------"
+
+    if [ "${target}" != "${current}" ]; then
+        echo "--- checkout current: ${current} ---"
+        git checkout "${current}"
+    fi
+}
+
+function git_empty() {
+    git commit --allow-empty -m "empty commit"
+    git log -1
+}
+
+# パースエラーがあっても頭に "ERR: " をつけてそのまま表示する jq
+function jqe() {
+    local com=${1:-.}
+    jq -R "try (fromjson | ${com}) catch @text" 2>&1 | sed -e 's/^.*(while parsing \x27\(.*\)\x27)"$/ERR: \1/'
+}
+
+export PROMPT_COMMAND=__prompt_command
+
+function __prompt_command() {
+    local EXIT=$?
+
+    local r_col='\[\e[0m\]'
+    local red='\[\e[0;31m\]'
+
+    if [ $EXIT -eq 0 ]; then
+        okng=""
+    else
+        okng="${red} NG! | ${r_col} "
+    fi
+
+    local branch=$(git branch --show-current 2> /dev/null)
+    if [ -n "${branch}" ]; then
+        branch=" (${branch})"
+    fi
+
+    # iTerm のタブタイトル用
+    local title=""
+    local newline=""
+    if [ -n "${branch}" -a "${TERM_PROGRAM:-}" = "iTerm.app" ]; then
+        title="\033]0;$(basename $(git rev-parse --show-toplevel))\007"
+        # ↑を入れると同一行の表示が不安定なので改行を入れる
+        newline="\n"
+    fi
+
+    PS1="${title}[${okng}\w${branch}]${newline}$ "
+}
+
+function remind() {
+    # brew install terminal-notifier
+    if [ $# -eq 0 ]; then
+        echo "help: ${FUNCNAME[0]} <wait seconds> [<message...>]"
+        return
+    fi
+    sleep_time=$1
+    shift
+    message="${*:-remind}"
+
+    (sleep ${sleep_time} ; echo "${message}" | terminal-notifier) &
+}
+
+alias doco='docker compose'
+alias dlogs='docker compose logs --tail 10 -f'
+
+# emacs上で動かすシェル用の設定
+default_term=xterm-256color
+if [ "$TERM" == "dumb" ]; then
+    export TERM=xterm-256color
+fi
+
+export LANG=ja_JP.UTF-8
+
+# go
+function ec() {
+    local path=${1:-"./..."}
+    local result=$(errcheck ${path} 2>&1)
+
+    if echo "${result}" | grep -q "error: failed to check packages"; then
+        echo "${result}" | \
+            sed -e 's/\[\]/__BRACKET__/g' | \
+            sed -e 's/[^\[]*\[\(.*\)\]/\1/' | \
+            sed -e 's/__BRACKET__/[]/g' | \
+            sed -e "s|$(pwd)/|./|g" | \
+            sed -e 's| ./|\n./|g' | \
+            sed 's/: /: \t/'
+        return 1
+    fi
+
+    return 0
+}
+
+# direnv
+eval "$(direnv hook bash)"
+
+# node
+export PATH=$HOME/.nodebrew/current/bin:$PATH
