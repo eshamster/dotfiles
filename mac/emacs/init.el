@@ -87,6 +87,8 @@
 (defadvice linum-schedule (around my-linum-schedule () activate)
   (run-with-idle-timer 0.2 nil #'linum-update-current))
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 ;; clock
 
 (setq display-time-string-forms
