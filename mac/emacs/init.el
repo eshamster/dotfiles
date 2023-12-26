@@ -210,7 +210,9 @@
   :custom
   ((company-dabbrev-downcase . nil)
    (company-dabbrev-ignore-case . nil)
-   (company-idle-delaycompany-idle-delay . 0.1))
+   (company-idle-delay . 0.1))
+  :bind
+  (("C-:" . company-manual-begin))
   :hook
   (go-mode-hook . (lambda ()
                     (set (make-local-variable 'company-backends)
@@ -339,6 +341,16 @@
   (yas-global-mode 1)
   (setq yas-prompt-functions '(yas-ido-prompt)))
 
+;; --- eglot --- ;;
+
+
+(leaf eglot
+  :bind (("C-c e" . (defhydra hydra-eglot
+                      (:hint nil :exit t :color blue)
+                      "eglot"
+                      ("r" xref-find-references "reference")
+                      ("s" eglot-rename "rename symbol")))))
+
 ;; --- TypeScript --- ;;
 ;; https://github.com/eshamster/dotfiles/blob/f5a39c71b013ade45048add19db4998b1cdfd62a/others/react-devel/react-devel.el
 
@@ -371,7 +383,8 @@
 
 (defun setup-ts-eglot ()
   (eglot-ensure)
-  (company-mode +1))
+  (company-mode +1)
+  (flycheck-mode +1))
 
 ;; require:
 ;; $ brew install tree-sitter
@@ -383,6 +396,10 @@
            (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-ts-mode)))
     (progn (add-hook 'typescript-mode-hook #'setup-tide-mode)
            (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))))
+
+(leaf typescript-ts-mode
+  :custom
+  ((company-idle-delay . 2)))
 
 (defun toggle-ts-mode ()
   (interactive)
