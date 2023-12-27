@@ -353,6 +353,11 @@
                       ("r" xref-find-references "reference")
                       ("s" eglot-rename "rename symbol")))))
 
+(leaf flycheck-eglot
+  :ensure t
+  :config
+  (global-flycheck-eglot-mode 1))
+
 ;; --- TypeScript --- ;;
 ;; https://github.com/eshamster/dotfiles/blob/f5a39c71b013ade45048add19db4998b1cdfd62a/others/react-devel/react-devel.el
 
