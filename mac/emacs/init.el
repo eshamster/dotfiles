@@ -558,9 +558,12 @@
 
 ;; --- ddskk --- ;;
 
-(use-package ddskk
+(leaf ddskk
   :bind
-  (("C-x C-j" . skk-mode)))
+  (("C-x C-j" . skk-mode))
+  :hook
+  (find-file-hooks . (lambda () (skk-latin-mode 1)))
+  (git-commit-setup-hook . (lambda () (skk-latin-mode 1))))
 
 (when (fboundp 'skk-mode)
   (fset 'ido-select-text 'skk-mode))
