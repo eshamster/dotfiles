@@ -216,7 +216,7 @@
    (company-dabbrev-ignore-case . nil)
    (company-idle-delay . 0.1))
   :bind
-  (("C-:" . company-manual-begin))
+  (("C-;" . company-manual-begin))
   :hook
   (go-mode-hook . (lambda ()
                     (set (make-local-variable 'company-backends)
