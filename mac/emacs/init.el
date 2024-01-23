@@ -134,7 +134,9 @@
 ;; --- magit --- ;;
 
 (leaf magit
-  :bind (("C-c g s" . magit-status)))
+  :bind (("C-c g s" . magit-status))
+  :custom
+  ((magit-list-refs-sortby . "-creatordate")))
 
 ;; --- tree-sitter --- ;;
 
