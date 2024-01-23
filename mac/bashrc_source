@@ -50,6 +50,18 @@ function git_empty() {
     git log -1
 }
 
+function git_clean_branch() {
+    local commit=${1:-0}
+
+    if [ "${commit}" -eq 1 ]; then
+        echo "--- commit ---"
+        git branch --merged | grep -vE "(main|master|release|$(gb))" | xargs git branch -d
+    else
+        echo "--- dry run ---"
+        git branch --merged | grep -vE "(main|master|release|$(gb))" || echo "(there is no branch to clean)"
+    fi
+}
+
 # パースエラーがあっても頭に "ERR: " をつけてそのまま表示する jq
 function jqe() {
     local com=${1:-.}
