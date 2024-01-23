@@ -147,3 +147,10 @@ eval "$(direnv hook bash)"
 
 # node
 export PATH=$HOME/.nodebrew/current/bin:$PATH
+
+# fzf
+# brew install fzf
+
+function fgs() {
+    git switch $(git bs | tac | fzf)
+}
