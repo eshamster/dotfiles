@@ -142,7 +142,6 @@
 
 ;; --- tree-sitter --- ;;
 
-
 (when (>= emacs-major-version 29)
   (require 'treesit))
 
@@ -395,11 +394,14 @@
 (defun setup-ts-eglot ()
   (eglot-ensure)
   (company-mode +1)
-  (flycheck-mode +1))
+  (flycheck-mode +1)
+  (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode))
 
 ;; require:
 ;; $ brew install tree-sitter
 ;; $ npm install -g typescript-language-server typescript
+;; 言語用のdylibを下記からダウンロードして ~/.emacs.d/tree-sitter/ に配置
+;; https://github.com/casouri/tree-sitter-module/releases
 (if (>= emacs-major-version 29)
     (progn (when (not (treesit-language-available-p 'typescript))
              (treesit-install-language-grammar 'typescript))
@@ -418,6 +420,16 @@
       (typescript-ts-mode)
       (when (eq major-mode 'typescript-ts-mode)
         (typescript-mode))))
+
+;; --- JavaScript --- ;;
+
+(leaf js-mode
+  :hook
+  (js-mode-hook . (lambda ()
+                    (eglot-ensure)
+                    (company-mode +1)
+                    (flycheck-mode +1)
+                    (flycheck-add-mode 'javascript-eslint))))
 
 ;; --- Python --- ;;
 
