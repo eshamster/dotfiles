@@ -64,6 +64,7 @@ function git_clean_branch() {
     else
         echo "--- dry run ---"
         git branch --merged | grep -vE "(main|master|release|$(gb))" || echo "(there is no branch to clean)"
+        echo "--- add \"1\" as first argument to run ---"
     fi
 }
 
@@ -73,7 +74,7 @@ function jqe() {
     jq -R "try (fromjson | ${com}) catch @text" 2>&1 | sed -e 's/^.*(while parsing \x27\(.*\)\x27)"$/ERR: \1/'
 }
 
-export PROMPT_COMMAND=__prompt_command
+export PROMPT_COMMAND="__prompt_command"
 
 function __prompt_command() {
     local EXIT=$?
@@ -158,4 +159,17 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 
 function fgs() {
     git switch $(git bs | tac | fzf)
+}
+
+function fh() {
+    $(tac ~/.bash_history | fzf)
+}
+
+# python
+
+function check_pyenv() {
+    python3<<EOF
+import sys
+print(sys.prefix)
+EOF
 }
