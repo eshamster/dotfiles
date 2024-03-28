@@ -140,7 +140,12 @@
 ;; --- company --- ;;
 
 (leaf company
-  :custom ((company-idle-delay . 0)))
+  :custom ((company-idle-delay . 0.4)
+           (company-minimum-prefix-length . 2)
+           (company-selection-wrap-around . t))
+  :bind ((:company-active-map
+          ("C-n" . company-select-next)
+          ("C-p" . company-select-previous))))
 
 ;; --- C# --- ;;
 
@@ -211,6 +216,18 @@
   :bind ((:markdown-mode-map
           ("C-c m b" . markdown-insert-bold)
           ("C-c m s" . split-markdown-code))))
+
+;; --- rust --- ;;
+
+(leaf eglot
+  :hook ((eglot-managed-mode-hook . (lambda () (eglot-inlay-hints-mode -1)))))
+
+(leaf rust-mode
+  :ensure t
+  :hook ((rust-mode-hook . eglot-ensure)
+         (rust-mode-hook . company-mode)
+         (rust-mode-hook . flycheck-mode))
+  :custom ((rust-format-on-save . t)))
 
 ;; --- yasnippet --- ;;
 
@@ -284,8 +301,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode magit auto-complete))))
+   '(rust-mode projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode bmemagit auto-complete)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
