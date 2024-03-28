@@ -41,7 +41,8 @@
                     dockerfile-mode
                     diminish
                     hydra
-                    idomenu))
+                    idomenu
+                    breadcrumb))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
@@ -129,8 +130,8 @@
                 ("b" revert-buffer "revert buffer")
                 ("e" flycheck-list-errors "flycheck list errors" )
                 ("r" hydra-common-replace/body ">replace")
-                ("i" idomenu "imenu as ido")))))
-  :Config
+                ("i" idomenu "imenu as ido"))))
+  :config
   (setq hydra-is-helpful t))
 
 ;; --- magit --- ;;
@@ -504,6 +505,26 @@
 ;; use back slash instead of yen mark (¥ = 0x5c)
 (define-key global-map [?¥] [?\\])
 
+(leaf saveplace
+  :init
+  (save-place-mode +1))
+
+(leaf so-long
+  :init
+  (global-so-long-mode +1))
+
+(setq-default show-trailing-whitespace t)
+
+;; 特定モードで show-trailing-whitespace を無効にする
+;; ref. https://www.reddit.com/r/emacs/comments/e1vos6/any_way_to_disable_showtrailingwhitespace_in_the/
+(dolist (hook '(special-mode-hook
+                term-mode-hook
+                comint-mode-hook
+                compilation-mode-hook
+                minibuffer-setup-hook))
+  (add-hook hook
+            (lambda () (setq show-trailing-whitespace nil))))
+
 ;; Open shell buffer
 (defun open-shell-buffer ()
   (interactive)
@@ -513,10 +534,10 @@
 
 (global-set-key (kbd "C-c C-z") 'open-shell-buffer)
 
-;; 
+;;
 (defun get-path-from-git-root ()
   (interactive)
-  (kill-new 
+  (kill-new
    (format "%s%s"
            (replace-regexp-in-string
             "\n$" "" (shell-command-to-string "git rev-parse --show-prefix 2> /dev/null || true"))
@@ -622,7 +643,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
