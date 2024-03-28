@@ -59,12 +59,16 @@
 
 (set-face-foreground 'font-lock-comment-face "#ee0909")
 (show-paren-mode t)
-(if (>= emacs-major-version 29)
-    (global-display-line-numbers-mode 1)
-    (global-linum-mode t))
-(setq linum-delay t)
-(defadvice linum-schedule (around my-linum-schedule () activate)
-  (run-with-idle-timer 0.2 nil #'linum-update-current))
+
+(global-display-line-numbers-mode 1)
+(set-face-foreground 'line-number "#448844")
+(set-face-background 'line-number "#f0f0f0")
+;; (setq linum-format "%4d \u2502 ")
+
+(setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\""
+      grep-program "\"C:\\Program Files\\Git\\usr\\bin\\grep.exe\""
+      grep-use-null-device "/dev/null")
+
 (setq visible-bell t)
 
 (setq initial-frame-alist
