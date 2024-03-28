@@ -31,7 +31,9 @@
                     leaf
                     leaf-convert
                     company
-                    projectile))
+                    projectile
+                    idomenu
+                    breadcrumb))
 
 ;; ----- keybind ----- ;;
 
@@ -292,6 +294,26 @@
 
 (global-set-key (kbd "C-c C-z") 'open-shell-buffer)
 
+(leaf saveplace
+  :init
+  (save-place-mode +1))
+
+(leaf so-long
+  :init
+  (global-so-long-mode +1))
+
+(setq-default show-trailing-whitespace t)
+
+;; 特定モードで show-trailing-whitespace を無効にする
+;; ref. https://www.reddit.com/r/emacs/comments/e1vos6/any_way_to_disable_showtrailingwhitespace_in_the/
+(dolist (hook '(special-mode-hook
+                term-mode-hook
+                comint-mode-hook
+                compilation-mode-hook
+                minibuffer-setup-hook))
+  (add-hook hook
+            (lambda () (setq show-trailing-whitespace nil))))
+
 ;; ----- start server ----- ;;
 (server-start)
 (put 'dired-find-alternate-file 'disabled nil)
@@ -301,7 +323,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(rust-mode projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode bmemagit auto-complete)))
+   '(breadcrumb idomenu rust-mode projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode bmemagit auto-complete)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
