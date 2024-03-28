@@ -1,5 +1,10 @@
+# shopt -s histappend
+
 export HISTSIZE=20000
 export HISTFILESIZE=20000
+
+export HISTIGNORE='ls:fh'
+export HISTCONTROL=ignoreboth:erasedups
 
 export GOPATH=~/program/go
 export PATH=${GOPATH}/bin:~/go/my/bin:${PATH}
