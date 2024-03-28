@@ -40,7 +40,8 @@
                     terraform-mode
                     dockerfile-mode
                     diminish
-                    hydra))
+                    hydra
+                    idomenu))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
@@ -127,8 +128,9 @@
                 ("u" uncomment-region "uncomment")
                 ("b" revert-buffer "revert buffer")
                 ("e" flycheck-list-errors "flycheck list errors" )
-                ("r" hydra-common-replace/body ">replace"))))
-  :config
+                ("r" hydra-common-replace/body ">replace")
+                ("i" idomenu "imenu as ido")))))
+  :Config
   (setq hydra-is-helpful t))
 
 ;; --- magit --- ;;
@@ -608,7 +610,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
