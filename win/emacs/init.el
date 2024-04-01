@@ -33,7 +33,8 @@
                     company
                     projectile
                     idomenu
-                    breadcrumb))
+                    breadcrumb
+                    web-mode))
 
 ;; ----- keybind ----- ;;
 
@@ -187,6 +188,18 @@
 (add-hook 'js-mode-hook #'setup-tide-mode)
 
 (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
+
+;; --- JavaScript --- ;;
+
+(leaf js-mode
+  :custom ((tab-width . 2)
+           (js-indent-level . 2)))
+
+;; --- web-mode --- ;;
+
+(leaf web-mode
+  :mode (("\\.html\\'" . web-mode))
+  :custom ((web-mode-markup-indent-offset . 2)))
 
 ;; --- CSS --- ;;
 
