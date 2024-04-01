@@ -271,9 +271,15 @@
 
 ;; ----- git-bash ----- ;;
 
+(defun find-bash-exe ()
+  (cl-find-if (lambda (file) (file-exists-p file))
+              (cl-mapcar (lambda (file) (replace-regexp-in-string "\\\\" "/" file))
+                         (list (format "%s/AppData/Local/Programs/Git/bin/bash.exe" (getenv "USERPROFILE"))
+                               "C:/Program Files/Git/bin/bash.exe"))))
+
 ;; https://qastack.jp/emacs/22049/git-bash-in-emacs-on-windows
 (prefer-coding-system 'utf-8)
-(setq explicit-shell-file-name "C:/Program Files/Git/bin/bash.exe")
+(setq explicit-shell-file-name (find-bash-exe))
 (setq explicit-bash.exe-args '("--login" "-i"))
 
 ;; ----- Other libraries ----- ;;
