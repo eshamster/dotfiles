@@ -68,8 +68,14 @@
 (set-face-background 'line-number "#f0f0f0")
 ;; (setq linum-format "%4d \u2502 ")
 
-(setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\""
-      grep-program "\"C:\\Program Files\\Git\\usr\\bin\\grep.exe\""
+(defun find-exe (exe)
+  (cl-find-if (lambda (file) (file-exists-p file))
+              (cl-mapcar (lambda (file) (replace-regexp-in-string "\\\\" "/" file))
+                         (list (format "%s/AppData/Local/Programs/Git/bin/%s" (getenv "USERPROFILE") exe)
+                               (format "%s/AppData/Local/Programs/Git/usr/bin/%s" (getenv "USERPROFILE") exe)))))
+
+(setq find-program (find-exe "find.exe")
+      grep-program (find-exe "grep.exe")
       grep-use-null-device "/dev/null")
 
 (setq visible-bell t)
@@ -271,15 +277,9 @@
 
 ;; ----- git-bash ----- ;;
 
-(defun find-bash-exe ()
-  (cl-find-if (lambda (file) (file-exists-p file))
-              (cl-mapcar (lambda (file) (replace-regexp-in-string "\\\\" "/" file))
-                         (list (format "%s/AppData/Local/Programs/Git/bin/bash.exe" (getenv "USERPROFILE"))
-                               "C:/Program Files/Git/bin/bash.exe"))))
-
 ;; https://qastack.jp/emacs/22049/git-bash-in-emacs-on-windows
 (prefer-coding-system 'utf-8)
-(setq explicit-shell-file-name (find-bash-exe))
+(setq explicit-shell-file-name (find-exe "bash.exe"))
 (setq explicit-bash.exe-args '("--login" "-i"))
 
 ;; ----- Other libraries ----- ;;
