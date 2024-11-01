@@ -328,13 +328,14 @@
 
 (defun format-protobuf-hook ()
   (when (eq major-mode 'protobuf-mode)
-    (shell-command (concat "clang-format -i " (buffer-file-name)))
+    (shell-command (concat "buf format -w " (buffer-file-name)))
     (revert-buffer t t t)))
 
-(use-package protobuf-mode
+(leaf protobuf-mode
+  :custom
+  ((c-basic-offset . 2)
+   (require-final-newline . t))
   :config
-  (setq c-basic-offset 4
-        require-final-newline t)
   (add-hook 'after-save-hook 'format-protobuf-hook))
 
 ;; --- arkテンプレート用 --- ;;
