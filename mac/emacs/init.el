@@ -218,11 +218,22 @@
    (company-dabbrev-ignore-case . nil)
    (company-idle-delay . 0.1))
   :bind
-  (("C-;" . company-manual-begin))
+  (("C-;" . company-manual-begin)
+   (:company-active-map
+    ("M-n". nil)
+    ("M-p". nil)
+    ("C-n" . company-select-next)
+    ("C-p" . company-select-previous)))
   :hook
   (go-mode-hook . (lambda ()
                     (set (make-local-variable 'company-backends)
-                         '(company-dabbrev)))))
+                         '(company-dabbrev))
+                    ;; subword-mode でアンダーバー単位で移動させるための設定
+                    ;; https://emacs.stackexchange.com/questions/62095/treat-hyphens-as-part-of-a-word
+                    ;; FIXME: syntaxハイライトに副作用がある
+                    ;; NOTE: インデント時に行頭のアンダーバーが消失する副作用があったのでいったん断念
+                    ;; (modify-syntax-entry ?_ "-")
+                )))
 
 ;; - go - ;;
 
@@ -271,15 +282,27 @@
                    (call-interactively 'capitalize-word))
           (subword-mode prev-subword-mode))))))
 
+(defun go-downcase-prev-word ()
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      (let ((prev-subword-mode (if subword-mode 1 -1)))
+        (unwind-protect
+            (progn (subword-mode -1)
+                   (call-interactively 'backward-word)
+                   (subword-mode 1)
+                   (call-interactively 'downcase-word))
+          (subword-mode prev-subword-mode))))))
+
 (leaf go-mode
   :bind
   ((:go-mode-map
-    ("M-." . godef-jump)
     ("M-[" . xref-find-references)
     ("C-c c f" . copy-go-function-name)
     ("C-c m n" . goto-go-next-func)
     ("C-c m p" . goto-go-prev-func)
-    ("C-c c u" . go-upcase-prev-word)))
+    ("C-c c u" . go-upcase-prev-word)
+    ("C-c c l" . go-downcase-prev-word)))
   :custom
   ((gofmt-command . "goimports")
    (c-basic-offset . 4)
@@ -287,7 +310,19 @@
   :config
   (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
   (add-hook 'before-save-hook 'gofmt-before-save)
-  (add-hook 'go-mode-hook 'subword-mode))
+  (add-hook 'go-mode-hook 'subword-mode)
+  (add-hook 'go-mode-hook 'eglot-ensure)
+  (add-hook 'go-mode-hook 'company-mode)
+  (add-hook 'go-mode-hook (lambda () (auto-complete-mode -1))))
+
+;; .tmpl ファイル用の設定
+(add-to-list 'auto-mode-alist '("\\.tmpl\\'" . my-tmpl-mode))
+
+(defun my-tmpl-mode ()
+  (setq indent-tabs-mode t))
+
+(add-hook 'my-tmpl-mode-hook 'my-tmpl-mode)
+
 
 ;; - protobuf - ;;
 
@@ -355,7 +390,8 @@
                       (:hint nil :exit t :color blue)
                       "eglot"
                       ("r" xref-find-references "reference")
-                      ("s" eglot-rename "rename symbol")))))
+                      ("s" eglot-rename "rename symbol")
+                      ("." xref-find-definitions "rename symbol")))))
 
 (leaf flycheck-eglot
   :ensure t
