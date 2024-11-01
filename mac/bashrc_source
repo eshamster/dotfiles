@@ -125,6 +125,22 @@ function remind() {
 alias doco='docker compose'
 alias dlogs='docker compose logs --tail 10 -f'
 
+function duplogs() {
+    local target=$1
+    if [ -z ${target} ]; then
+        return 1
+    fi
+    docker compose up -d ${target} && docker compose logs --tail 10 -f ${target}
+}
+
+function dreslogs() {
+    local target=$1
+    if [ -z ${target} ]; then
+        return 1
+    fi
+    docker compose restart ${target} && docker compose logs --tail 10 -f ${target}
+}
+
 # emacs上で動かすシェル用の設定
 default_term=xterm-256color
 if [ "$TERM" == "dumb" ]; then
