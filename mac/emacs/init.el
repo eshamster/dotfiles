@@ -205,7 +205,9 @@
 (defun my-web-mode-hook ()
   (setq web-mode-markup-indent-offset 2)
   (set-face-foreground 'web-mode-html-tag-face "Blue1")
-  (set-face-foreground 'web-mode-html-attr-name-face "ForestGreen"))
+  (set-face-foreground 'web-mode-html-attr-name-face "ForestGreen")
+  (set (make-local-variable 'company-backends)
+       '(company-dabbrev company-dabbrev-code company-semantic)))
 
 (use-package web-mode
   :mode (("\\.mt\\'" . web-mode)
@@ -215,17 +217,23 @@
 
 ;; - company - ;;
 (leaf company-mode
+  :init
+  (global-company-mode)
   :custom
   ((company-dabbrev-downcase . nil)
    (company-dabbrev-ignore-case . nil)
-   (company-idle-delay . 0.1))
+   (company-minimum-prefix-length . 2)
+   (company-idle-delay . 0.1)
+   ;; ハイフンを補完対象文字列に追加 ("\\sw" (default) + "-")
+   (company-dabbrev-char-regexp . "\\(\\sw\\|-\\)"))
   :bind
   (("C-;" . company-manual-begin)
    (:company-active-map
     ("M-n". nil)
     ("M-p". nil)
     ("C-n" . company-select-next)
-    ("C-p" . company-select-previous)))
+    ("C-p" . company-select-previous)
+    ("C-s" . company-search-filtering)))
   :hook
   (go-mode-hook . (lambda ()
                     (set (make-local-variable 'company-backends)
@@ -534,8 +542,8 @@
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
 
 ;; auto complete
-(require 'auto-complete-config)
-(ac-config-default)
+;; (require 'auto-complete-config)
+;; (ac-config-default)
 
 ;; replace "option" and "command"
 (setq ns-command-modifier 'meta)
