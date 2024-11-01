@@ -42,7 +42,8 @@
                     diminish
                     hydra
                     idomenu
-                    breadcrumb))
+                    breadcrumb
+                    avy))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
@@ -604,6 +605,12 @@
     (while (re-search-forward "<[^>]+>" nil t)
       (replace-match (downcase (match-string 0)) t))))
 
+(leaf avy
+  :bind
+  ("C-c C-s" . avy-goto-char-timer)
+  :config
+  (setq avy-timeout-seconds 0.5))
+
 ;; --- ido-mode --- ;;
 
 (use-package ido
@@ -681,7 +688,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
