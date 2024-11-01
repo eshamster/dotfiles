@@ -34,11 +34,15 @@ function git_update() {
 
     if [ "${target}" != "${current}" ]; then
         echo "--- checkout target: ${target} ---"
-        git checkout "${target}"
+        git switch "${target}"
     fi
 
     git fetch -p
     git rebase origin/${target}
+    code=$?
+    if [ $code -ne 0 ]; then
+        return $code
+    fi
 
     echo "------------------------"
     git log -1 --date=format-local:'%Y-%m-%d %H:%M:%S'
@@ -46,7 +50,7 @@ function git_update() {
 
     if [ "${target}" != "${current}" ]; then
         echo "--- checkout current: ${current} ---"
-        git checkout "${current}"
+        git switch "${current}"
     fi
 }
 
@@ -60,10 +64,10 @@ function git_clean_branch() {
 
     if [ "${commit}" -eq 1 ]; then
         echo "--- commit ---"
-        git branch --merged | grep -vE "(main|master|release|$(gb))" | xargs git branch -d
+        git branch --format='%(refname:short)' --merged | grep -vE "^(main|master|release.*|$(gb))\$" | xargs git branch -d
     else
         echo "--- dry run ---"
-        git branch --merged | grep -vE "(main|master|release|$(gb))" || echo "(there is no branch to clean)"
+        git branch --format='%(refname:short)' --merged | grep -vE "^(main|master|release.*|$(gb))\$" || echo "(there is no branch to clean)"
         echo "--- add \"1\" as first argument to run ---"
     fi
 }
