@@ -207,7 +207,8 @@
   (set-face-foreground 'web-mode-html-attr-name-face "ForestGreen"))
 
 (use-package web-mode
-  :mode (("\\.mt\\'" . web-mode))
+  :mode (("\\.mt\\'" . web-mode)
+         ("\\.html\\'" . web-mode))
   :init
   (add-hook 'web-mode-hook 'my-web-mode-hook))
 
@@ -611,7 +612,7 @@
   :config
   (ido-mode t)
   (ido-everywhere t)
-  (setq ido-enable-flex-mathing t
+  (setq ido-enable-flex-matching t
         ffap-machine-p-known 'reject
         ido-use-filename-at-point nil
         ;; https://stackoverflow.com/questions/17986194/emacs-disable-automatic-file-search-in-ido-mode
@@ -691,3 +692,4 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'erase-buffer 'disabled nil)
+(put 'list-timers 'disabled nil)
