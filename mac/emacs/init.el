@@ -176,18 +176,15 @@
                   (perltidy-region)))
 
 (leaf cperl-mode
-  :bind ((:cperl-mode-map
+  :bind ((cperl-mode-map :package cperl-mode
           ("C-c p t" . perltidy-region)
           ;; "p" is already used as "package"
           ;; so use "h" (head of buffer) instead.
           ("C-c c h" . copy-perl-package-name)
           ("M-." . xref-find-definitions)))
-  :mode (("\\.pl\\'" . cperl-mode)
-         ("\\.pm\\'" . cperl-mode)
-         ("\\.t\\'" . cperl-mode))
-  :init
-  (add-hook 'cperl-mode-hook 'hs-minor-mode)
-  (add-hook 'cperl-mode-hook 'flycheck-mode)
+  :mode ("\\.pl\\'" "\\.pm\\'" "\\.t\\'")
+  :hook ((cperl-mode-hook . hs-minor-mode)
+         (cperl-mode-hook . flycheck-mode))
   :custom
   ((cperl-indent-level . 4)
    (cperl-indent-parens-as-block . t)
@@ -316,12 +313,13 @@
    (c-basic-offset . 4)
    (tab-width . 4))
   :config
-  (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  (add-hook 'go-mode-hook 'subword-mode)
-  (add-hook 'go-mode-hook 'eglot-ensure)
-  (add-hook 'go-mode-hook 'company-mode)
-  (add-hook 'go-mode-hook (lambda () (auto-complete-mode -1))))
+  (with-eval-after-load 'go-mode
+    (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    (add-hook 'go-mode-hook 'subword-mode)
+    (add-hook 'go-mode-hook 'eglot-ensure)
+    (add-hook 'go-mode-hook 'company-mode)
+    (add-hook 'go-mode-hook (lambda () (auto-complete-mode -1)))))
 
 ;; .tmpl ファイル用の設定
 (add-to-list 'auto-mode-alist '("\\.tmpl\\'" . my-tmpl-mode))
@@ -340,11 +338,10 @@
     (revert-buffer t t t)))
 
 (leaf protobuf-mode
+  :hook ((after-save-hook . format-protobuf-hook))
   :custom
   ((c-basic-offset . 2)
-   (require-final-newline . t))
-  :config
-  (add-hook 'after-save-hook 'format-protobuf-hook))
+   (require-final-newline . t)))
 
 ;; --- arkテンプレート用 --- ;;
 
@@ -391,7 +388,6 @@
   (setq yas-prompt-functions '(yas-ido-prompt)))
 
 ;; --- eglot --- ;;
-
 
 (leaf eglot
   :bind (("C-c e" . (defhydra hydra-eglot
@@ -479,9 +475,8 @@
 ;; --- Python --- ;;
 
 (leaf python-mode
-  :config
-  (add-hook 'python-mode-hook 'company-mode)
-  (add-hook 'python-mode-hook 'flycheck-mode))
+  :hook ((python-mode-hook . company-mode)
+         (python-mode-hook . flycheck-mode)))
 
 ;; --- Others --- ;;
 
