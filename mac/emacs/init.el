@@ -20,7 +20,6 @@
                     smex
                     web-mode
                     ;; paredit
-                    use-package
                     yasnippet
                     flycheck
                     powerline
@@ -43,7 +42,8 @@
                     hydra
                     idomenu
                     breadcrumb
-                    avy))
+                    avy
+                    leaf-convert))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
@@ -209,11 +209,9 @@
   (set (make-local-variable 'company-backends)
        '(company-dabbrev company-dabbrev-code company-semantic)))
 
-(use-package web-mode
-  :mode (("\\.mt\\'" . web-mode)
-         ("\\.html\\'" . web-mode))
-  :init
-  (add-hook 'web-mode-hook 'my-web-mode-hook))
+(leaf web-mode
+  :mode ("\\.mt\\'" "\\.html\\'")
+  :hook ((web-mode-hook . my-web-mode-hook)))
 
 ;; - company - ;;
 (leaf company-mode
@@ -365,11 +363,10 @@
 
 ;; --- vue-mode --- ;;
 
-(use-package vue-mode
-  :init
-  (setq js-indent-level 2)
-  :config
-  (add-hook 'vue-mode-hook 'company-mode))
+(leaf vue-mode
+  :hook ((vue-mode-hook . company-mode))
+  :pre-setq ((js-indent-level . 2))
+  :require t)
 
 ;; --- yasnippet --- ;;
 
@@ -537,9 +534,9 @@
 (recentf-mode 1)
 
 ;; display the directory name of the file when files that have a same name are opened
-(use-package uniquify
-  :config
-  (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
+(leaf uniquify
+  :require t
+  :setq ((uniquify-buffer-name-style quote post-forward-angle-brackets)))
 
 ;; auto complete
 ;; (require 'auto-complete-config)
@@ -621,9 +618,8 @@
 
 ;; --- ido-mode --- ;;
 
-(use-package ido
-  :bind
-  ("C-x C-f" . ido-find-file)
+(leaf ido
+  :bind (("C-x C-f" . ido-find-file))
   :config
   (ido-mode t)
   (ido-everywhere t)
@@ -633,16 +629,16 @@
         ;; https://stackoverflow.com/questions/17986194/emacs-disable-automatic-file-search-in-ido-mode
         ido-auto-merge-work-directories-length -1))
 
-(use-package smex
-  :bind
-  (("M-x" . smex)
-   ("M-X" . smex-major-mode-commands)))
+(leaf smex
+  :bind (("M-x" . smex)
+         ("M-X" . smex-major-mode-commands)))
 
-(use-package ido-vertical-mode
+(leaf ido-vertical-mode
+  :require t
+  :setq ((ido-vertical-define-keys quote C-n-and-C-p-only)
+         (ido-max-window-height . 0.75))
   :config
-  (ido-vertical-mode t)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only
-        ido-max-window-height 0.75))
+  (ido-vertical-mode t))
 
 ;; --- ddskk --- ;;
 
@@ -672,10 +668,12 @@
 
 ;; --- projectile --- ;;
 
-(use-package projectile
+(leaf projectile
+  :bind ((projectile-mode-map
+          ("C-c p" . projectile-command-map)))
   :init
   (projectile-mode t)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  :require t)
 
 ;; --- for project --- ;;
 
@@ -696,7 +694,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
