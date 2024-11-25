@@ -60,12 +60,7 @@
         ("C-\\" . undo)
         ("C-o"  . nil)
         ("C-x i" . nil)
-        ("C-x ;" . comment-region)
-        ("C-x :" . uncomment-region)
-        ("C-x C-i"   . indent-region)
-        ("C-c s r" . replace-regexp)
-        ("C-c s q" . query-replace)
-        ("C-c s s" . replace-string)
+        ("C-x C-i" . indent-region)
         ("M-*" . pop-tag-mark)
         ("M-o" . other-window)
         ("C-c d" . insert-today)
@@ -608,7 +603,8 @@
 
 (leaf avy
   :bind
-  ("C-c C-s" . avy-goto-char-timer)
+  (("C-c C-s" . avy-goto-char-timer)
+   ("C-c s s" . avy-goto-char-timer))
   :config
   (setq avy-timeout-seconds 0.5))
 
