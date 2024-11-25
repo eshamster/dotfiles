@@ -43,7 +43,8 @@
                     idomenu
                     breadcrumb
                     avy
-                    leaf-convert))
+                    leaf-convert
+                    mermaid-mode))
 
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
@@ -670,6 +671,14 @@
   (projectile-mode t)
   :require t)
 
+;; --- mermaid mode --- ;;
+
+(leaf mermaid-mode
+  :mode ("\\.mermaid\\'")
+  :setq ((mermaid-mmdc-location . "docker")
+         ;; require: docker pull minlag/mermaid-cli:11.4.0
+         (mermaid-flags . "run -u 1000 -v /tmp:/tmp minlag/mermaid-cli:11.4.0")))
+
 ;; --- for project --- ;;
 
 (defun some-admin-jsx ()
@@ -689,7 +698,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
