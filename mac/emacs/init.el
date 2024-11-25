@@ -474,6 +474,26 @@
   :hook ((python-mode-hook . company-mode)
          (python-mode-hook . flycheck-mode)))
 
+;; --- Java --- ;;
+
+;; 最初に .java を開いた際に Eclipse JDT language server がインストールされる
+;; 手元ではインストール時に警告が出ており動作もしていなかったが、
+;; Emacs を再起動してからは問題なく動作しているように見える
+(leaf eglot-java
+  :ensure t
+  :hook ((java-mode-hook . eglot-java-mode))
+  :bind ((eglot-java-mode-map
+          :package eglot-java-mode
+          ("C-c j" . (defhydra hydra-eglot-java
+                       (:hint nil :exit t :color blue)
+                       "eglot-java"
+                       ("n" eglot-java-file-new "new file")
+                       ("x" eglot-java-run-main "run main")
+                       ("t" eglot-java-run-test "run test")
+                       ("N" eglot-java-project-new "new project")
+                       ("T" eglot-java-project-build-task "build task")
+                       ("R" eglot-java-project-build-refresh "build refresh"))))))
+
 ;; --- Others --- ;;
 
 ;; mode-line
