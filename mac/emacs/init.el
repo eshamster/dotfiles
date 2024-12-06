@@ -747,6 +747,31 @@
          ;; require: docker pull minlag/mermaid-cli:11.4.0
          (mermaid-flags . "run -u 1000 -v /tmp:/tmp minlag/mermaid-cli:11.4.0")))
 
+;; --- Common Lisp --- ;;
+
+(leaf slime
+  :ensure t
+  :setq ((inferior-lisp-program . "ros run"))
+  :hook ((slime-mode-hook . company-mode))
+  :config (slime-setup))
+
+(leaf slime-company
+  :ensure t)
+
+(leaf paredit
+  :ensure t
+  :bind ((paredit-mode-map
+          ("C-c f" . paredit-forward-slurp-sexp)
+          ("C-c b" . paredit-forward-barf-sexp)
+          ("C-h" . paredit-backward-delete)
+          ;; ("C-c p" . paredit-backward)
+          ;; ("C-c n" . paredit-forward)
+          ("C-M-p" . paredit-backward)
+          ("C-M-n" . paredit-forward)))
+  :hook ((emacs-lisp-mode-hook . enable-paredit-mode)
+         (slime-mode-hook . enable-paredit-mode)
+         (slime-repl-mode-hook . enable-paredit-mode)))
+
 ;; --- for project --- ;;
 
 (defun some-admin-jsx ()
