@@ -193,3 +193,6 @@ import sys
 print(sys.prefix)
 EOF
 }
+
+# php
+export PATH="$HOME/.composer/vendor/bin:$PATH"

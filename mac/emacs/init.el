@@ -200,10 +200,15 @@
   (set-face-foreground 'web-mode-html-tag-face "Blue1")
   (set-face-foreground 'web-mode-html-attr-name-face "ForestGreen")
   (set (make-local-variable 'company-backends)
-       '(company-dabbrev company-dabbrev-code company-semantic)))
+       '(company-dabbrev company-dabbrev-code company-semantic))
+  (cond ((string-match "\\.php\\'" buffer-file-name)
+         (my-php-mode-setup)
+         (define-key web-mode-map (kbd "M-.") 'ac-php-find-symbol-at-point)
+         (define-key web-mode-map (kbd "M-*") 'ac-php-location-stack-back)
+         (message "DONE PHP setup"))))
 
 (leaf web-mode
-  :mode ("\\.mt\\'" "\\.html\\'")
+  :mode ("\\.mt\\'" "\\.html\\'" "\\.php\\'")
   :hook ((web-mode-hook . my-web-mode-hook)))
 
 ;; - company - ;;
@@ -229,6 +234,7 @@
   (go-mode-hook . (lambda ()
                     (set (make-local-variable 'company-backends)
                          '(company-dabbrev))
+                    (setq-local page-delimiter "^\\(func\\|const\\|type\\)")
                     ;; subword-mode でアンダーバー単位で移動させるための設定
                     ;; https://emacs.stackexchange.com/questions/62095/treat-hyphens-as-part-of-a-word
                     ;; FIXME: syntaxハイライトに副作用がある
@@ -494,6 +500,52 @@
                        ("T" eglot-java-project-build-task "build task")
                        ("R" eglot-java-project-build-refresh "build refresh"))))))
 
+;; --- PHP --- ;;
+
+(leaf company-php
+  :ensure t
+  ;; ac-php-remake-tags-all はPHPファイル外 (.ac-php-conf.json) でも使うので事前にrequireしておく
+  ;; (実行場所を考えれば my-php-mode-setup の中のrequireで十分かも)
+  :require t)
+
+(leaf flycheck-phpstan
+  :ensure t)
+
+;; https://qiita.com/tadsan/items/a76768439869f00a4e89
+(defun my-php-mode-setup ()
+  "My PHP-mode hook."
+  (subword-mode 1)
+  (setq show-trailing-whitespace t)
+
+  (setq-local page-delimiter "\\_<\\(class\\|function\\|namespace\\)\\_>.+$")
+
+  (require 'flycheck-phpstan)
+  (flycheck-mode t)
+  (add-to-list 'flycheck-disabled-checkers 'php-phpmd)
+  (add-to-list 'flycheck-disabled-checkers 'php-phpcs)
+
+  ;; https://github.com/xcwen/ac-php
+  (require 'company-php)
+  (company-mode t)
+  (ac-php-core-eldoc-setup)
+  (set (make-local-variable 'company-backends)
+       '((company-ac-php-backend company-dabbrev-code)
+         company-capf
+         company-files)))
+
+;; NOTE: 純粋なPHPでは割りと良い感じに動くものの
+;; HTML埋め込みだと全くうまく動かないのでいったんweb-modeの方で色々できないか模索中
+;; (leaf php-mode
+;;   :ensure t
+;;   :hook ((php-mode . my-php-mode-setup))
+;;   :bind ((:php-mode-map
+;;           ("M-." . ac-php-find-symbol-at-point)
+;;           ("M-*" . ac-php-location-stack-back)))
+;;   :custom
+;;   ((php-manual-url . 'ja)
+;;    (php-mode-coding-style . 'psr2)
+;;    (php-mode-template-compatibility . nil)))
+
 ;; --- Others --- ;;
 
 ;; mode-line
@@ -714,7 +766,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(php-mode mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
