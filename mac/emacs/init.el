@@ -1,6 +1,6 @@
 (when (require 'package nil t)
   (add-to-list 'package-archives
-    '("melpa" . "https://melpa.org/packages/") t))
+               '("melpa" . "https://melpa.org/packages/") t))
 
 (package-initialize)
 
@@ -51,7 +51,7 @@
 
 ;; --- keybind --- ;;
 
-(mapc '(lambda (pair)
+(mapc #'(lambda (pair)
          (global-set-key (kbd (car pair)) (cdr pair)))
       '(("M-g"  . goto-line)
         ("C-h"  . delete-backward-char)
@@ -202,14 +202,12 @@
   (set (make-local-variable 'company-backends)
        '(company-dabbrev company-dabbrev-code company-semantic))
   (cond ((string-match "\\.php\\'" buffer-file-name)
-         (my-php-mode-setup)
-         (define-key web-mode-map (kbd "M-.") 'ac-php-find-symbol-at-point)
-         (define-key web-mode-map (kbd "M-*") 'ac-php-location-stack-back)
-         (message "DONE PHP setup"))))
+         (my-php-hook-for-web-mode))))
 
 (leaf web-mode
   :mode ("\\.mt\\'" "\\.html\\'" "\\.php\\'")
-  :hook ((web-mode-hook . my-web-mode-hook)))
+  :hook ((web-mode-hook . my-web-mode-hook))
+  :setq ((web-mode-enable-auto-expanding . t)))
 
 ;; - company - ;;
 (leaf company-mode
@@ -508,8 +506,21 @@
   ;; (実行場所を考えれば my-php-mode-setup の中のrequireで十分かも)
   :require t)
 
-(leaf flycheck-phpstan
-  :ensure t)
+;; flycheck-phpstan が web-mode に対応していなかった...
+;; (leaf flycheck-phpstan
+;;   :ensure t)
+
+(defun indent-after (key)
+  (insert key)
+  (indent-for-tab-command))
+
+;; NOTE: defun では引数の "key" が lambda に渡らなかったので defmacro で定義。
+;; lexical-binding を有効にしても渡らなかったので
+;; 実行時にはバインディングの情報が消えていると思われる
+(defmacro make-indent-after (key)
+  `(lambda ()
+     (interactive)
+     (indent-after ,key)))
 
 ;; https://qiita.com/tadsan/items/a76768439869f00a4e89
 (defun my-php-mode-setup ()
@@ -519,19 +530,35 @@
 
   (setq-local page-delimiter "\\_<\\(class\\|function\\|namespace\\)\\_>.+$")
 
-  (require 'flycheck-phpstan)
+  ;; TODO: (結局当面使うことはなさそうなので再度使う場合のメモ)
+  ;; ↓まだphp-modeは諦め切れない (HTML埋め込み以外のケースであれば使いたい) ので
+  ;; php-modeか否かで初期化処理を分岐させる
+
+  ;; phpcsもphp-modeのみ対応だった...
+  ;; (setq flycheck-phpcs-standard "PSR2")
+  ;; (flycheck-select-checker 'php-phpcs)
+
+  ;; (require 'flycheck-phpstan)
   (flycheck-mode t)
-  (add-to-list 'flycheck-disabled-checkers 'php-phpmd)
-  (add-to-list 'flycheck-disabled-checkers 'php-phpcs)
+  ;; (flycheck-select-checker 'phpstan)
+  ;; (add-to-list 'flycheck-disabled-checkers 'php-phpmd)
+  ;;(add-to-list 'flycheck-disabled-checkers 'php-phpcs)
 
   ;; https://github.com/xcwen/ac-php
-  (require 'company-php)
   (company-mode t)
+  (require 'company-php)
   (ac-php-core-eldoc-setup)
   (set (make-local-variable 'company-backends)
        '((company-ac-php-backend company-dabbrev-code)
          company-capf
          company-files)))
+
+(defun my-php-hook-for-web-mode ()
+  (my-php-mode-setup)
+  (define-key web-mode-map (kbd "M-.") 'ac-php-find-symbol-at-point)
+  (define-key web-mode-map (kbd "M-*") 'ac-php-location-stack-back)
+  (define-key web-mode-map (kbd ";") (make-indent-after ";"))
+  (define-key web-mode-map (kbd "}") (make-indent-after "}")))
 
 ;; NOTE: 純粋なPHPでは割りと良い感じに動くものの
 ;; HTML埋め込みだと全くうまく動かないのでいったんweb-modeの方で色々できないか模索中
@@ -585,7 +612,8 @@
 (setq recentf-max-saved-items 10000
       recentf-auto-cleanup 'never
       recentf-exclude '("/recentf" "COMMIT_EDITING" "/.?TAGS" "ido\\.last")
-      recentf-auto-save-timer (run-with-idle-timer 30 t 'recentf-save-list))
+      ;; https://emacs.stackexchange.com/questions/45697/prevent-emacs-from-messaging-when-it-writes-recentf
+      recentf-auto-save-timer (run-with-idle-timer (* 3 60) t 'recentf-save-list))
 
 (defun ido-recentf ()
   (interactive)
@@ -791,7 +819,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(php-mode mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
