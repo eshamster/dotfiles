@@ -800,6 +800,27 @@
          (slime-mode-hook . enable-paredit-mode)
          (slime-repl-mode-hook . enable-paredit-mode)))
 
+;; --- obsidian --- ;;
+
+;; https://github.com/licht1stein/obsidian.el?tab=readme-ov-file#installation
+(leaf obsidian
+  :ensure t
+  :require t
+  :bind ((obsidian-mode-map
+          ("C-c o" . obsidian-hydra/body)
+          ("M-." . obsidian-follow-link-at-point)
+          ;; NOTE: 元のページに戻るをいったん簡易的に。
+          ;; しばらく使って今いちなら自分で履歴を管理する
+          ("M-*" . switch-to-prev-buffer)))
+  :custom
+  (;; This directory will be used for `obsidian-capture' if set.
+   (obsidian-inbox-directory . "Inbox")
+   ;; The directory for daily notes (file name is YYYY-MM-DD.md)
+   (obsidian-daily-notes-directory . "Daily Notes"))
+  :config
+  (obsidian-specify-path "~/Google Drive/マイドライブ/Obsidian/main")
+  (global-obsidian-mode t))
+
 ;; --- for project --- ;;
 
 (defun some-admin-jsx ()
