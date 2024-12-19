@@ -106,7 +106,12 @@
 
 ;; leaf
 
-(leaf-keywords-init)
+(leaf leaf-keywords
+  :ensure t
+  :init
+  (leaf el-get :ensure t)
+  :config
+  (leaf-keywords-init))
 
 ;; --- hydra --- ;;
 
@@ -802,6 +807,7 @@
 
 ;; --- obsidian --- ;;
 
+;; https://github.com/copilot-emacs/copilot.el
 ;; https://github.com/licht1stein/obsidian.el?tab=readme-ov-file#installation
 (leaf obsidian
   :ensure t
@@ -820,6 +826,31 @@
   :config
   (obsidian-specify-path "~/Google Drive/マイドライブ/Obsidian/main")
   (global-obsidian-mode t))
+
+; --- copilot --- ;;
+
+;; https://github.com/copilot-emacs/copilot.el
+;; https://zenn.dev/lecto/articles/dad1d04c0605a1
+(leaf copilot
+  :el-get (copilot
+           :type github
+           :pkgname "copilot-emacs/copilot.el")
+  :init
+  (leaf editorconfig :ensure t)
+  (leaf s :ensure t)
+  (leaf dash :ensure t)
+  :bind ((copilot-mode-map
+          ("C-c ;" . copilot-complete))
+         (copilot-completion-map
+          ("C-i" . copilot-accept-completion)
+          ("C-m" . copilot-accept-completion)
+          ("C-n" . copilot-next-completion)
+          ("C-p" . copilot-prev-completion)))
+  :config
+  ;; https://github.com/copilot-emacs/copilot.el/issues/312
+  (dolist (pair '((emacs-lisp-mode 2)
+                  (go-mode 4)))
+    (add-to-list 'copilot-indentation-alist pair)))
 
 ;; --- for project --- ;;
 
