@@ -866,23 +866,10 @@
                   (web-mode 2)))
     (add-to-list 'copilot-indentation-alist pair)))
 
-(defun get-default-custom-value (sym)
-  (eval (car (get sym 'standard-value))))
-
-(defun add-string-to-custom-value (sym add-string)
-  (set sym (concat (get-default-custom-value sym) add-string)))
-
 (leaf copilot-chat
   :ensure t
-  :config
-  ;; copilot-chat-prompt-xxx を個別に日本語対応しなくて良いように横着
-  ;; 以下の問題があったので :custom や setq ではなく copilot-chat-reset のアドバイスで対応
-  ;; - 初期化時は (get ...) で取れる値がnilだった
-  ;; - copilot-chat-reset が走った時に設定した値がリセットされてしまう
-  (defadvice copilot-chat-reset (after copilot-chat-reset-set-prompt)
-    (add-string-to-custom-value 'copilot-chat-prompt "以上を踏まえて日本語で回答して\n")
-    ;; commit時のメッセージは別口だったので個別に設定
-    (add-string-to-custom-value 'copilot-chat-commit-prompt "以上を踏まえて日本語でメッセージを作成して\n")))
+  :custom
+  ((copilot-chat-prompt-suffix . "日本語で回答して")))
 
 ;; --- for project --- ;;
 
