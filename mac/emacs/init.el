@@ -843,14 +843,31 @@
           ("C-c ;" . copilot-complete))
          (copilot-completion-map
           ("C-i" . copilot-accept-completion)
-          ("C-m" . copilot-accept-completion)
-          ("C-n" . copilot-next-completion)
-          ("C-p" . copilot-prev-completion)))
+          ("C-m" . (lambda ()
+                     (interactive)
+                     (copilot-accept-completion)
+                     (newline-and-indent)))
+          ("M-n" . copilot-next-completion)
+          ("M-p" . copilot-prev-completion)))
+  :custom
+  ((copilot-idle-delay . 0.1))
+  :hook ((go-mode-hook . copilot-mode)
+         (emacs-lisp-mode-hook . copilot-mode)
+         (web-mode-hook . copilot-mode)
+         (markdown-mode-hook . (lambda ()
+                                 (copilot-mode t)
+                                 ;; 一応ONにしてみたが余り役に立たないので明示的な補完のみにする
+                                 (setq-local copilot-idle-delay nil))))
   :config
   ;; https://github.com/copilot-emacs/copilot.el/issues/312
-  (dolist (pair '((emacs-lisp-mode 2)
-                  (go-mode 4)))
+  (dolist (pair '((go-mode 4)
+                  (markdown-mode 4)
+                  (emacs-lisp-mode 2)
+                  (web-mode 2)))
     (add-to-list 'copilot-indentation-alist pair)))
+
+(leaf copilot-chat
+  :ensure t)
 
 ;; --- for project --- ;;
 
