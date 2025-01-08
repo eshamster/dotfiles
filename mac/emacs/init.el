@@ -869,7 +869,8 @@
 (leaf copilot-chat
   :ensure t
   :custom
-  ((copilot-chat-prompt-suffix . "日本語で回答して")))
+  ((copilot-chat-prompt-suffix . "日本語で回答して")
+   (copilot-chat-prompt-review . "Please review the following code. Show improvements as list. Then, show improved codes as diff style while explaining which code relates to which improvement. Don't show whole code.\n")))
 
 ;; --- for project --- ;;
 
