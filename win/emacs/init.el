@@ -102,6 +102,15 @@
 (setq initial-frame-alist
       '((top . 83) (left . 178) (width . 175) (height . 54)))
 
+;; leaf
+
+(leaf leaf-keywords
+  :ensure t
+  :init
+  (leaf el-get :ensure t)
+  :config
+  (leaf-keywords-init))
+
 ;; -- ido-mode -- ;;
 
 (leaf ido
@@ -351,6 +360,36 @@
                 minibuffer-setup-hook))
   (add-hook hook
             (lambda () (setq show-trailing-whitespace nil))))
+
+; --- copilot --- ;;
+
+;; https://github.com/copilot-emacs/copilot.el
+;; https://zenn.dev/lecto/articles/dad1d04c0605a1
+(leaf copilot
+  :el-get (copilot
+           :type github
+           :pkgname "copilot-emacs/copilot.el")
+  :init
+  (leaf editorconfig :ensure t)
+  (leaf s :ensure t)
+  (leaf dash :ensure t)
+  :hook ((emacs-lisp-mode-hook . copilot-mode)
+         (rust-mode-hook . copilot-mode)
+         (svelte-mode-hook . copilot-mode)
+         (tide-mode-hook . copilot-mode))
+  :bind ((copilot-mode-map
+          ("C-c ;" . copilot-complete))
+         (copilot-completion-map
+          ("C-i" . copilot-accept-completion)
+          ("C-m" . copilot-accept-completion)
+          ("C-n" . copilot-next-completion)
+          ("C-p" . copilot-prev-completion)))
+  :config
+  ;; https://github.com/copilot-emacs/copilot.el/issues/312
+  (dolist (pair '((emacs-lisp-mode 2)
+                  (go-mode 4)
+                  (svelte-mode 2)))
+    (add-to-list 'copilot-indentation-alist pair)))
 
 ;; ----- start server ----- ;;
 (server-start)
