@@ -54,6 +54,7 @@
         ("C-c C-w" . count-words)))
 
 ;; ----- Environment ----- ;;
+
 (setq redisplay-dont-pause t
       scroll-margin 3
       scroll-step 1
@@ -68,15 +69,33 @@
 (set-face-background 'line-number "#f0f0f0")
 ;; (setq linum-format "%4d \u2502 ")
 
-(defun find-exe (exe)
-  (cl-find-if (lambda (file) (file-exists-p file))
-              (cl-mapcar (lambda (file) (replace-regexp-in-string "\\\\" "/" file))
-                         (list (format "%s/AppData/Local/Programs/Git/bin/%s" (getenv "USERPROFILE") exe)
-                               (format "%s/AppData/Local/Programs/Git/usr/bin/%s" (getenv "USERPROFILE") exe)))))
+(defun find-exe-path (exe)
+  (replace-regexp-in-string
+   "/" "\\\\"
+   (cl-find-if (lambda (dir) (file-exists-p (format "%s/%s" dir exe)))
+               (list (format "%s/AppData/Local/Programs/Git/bin" (getenv "USERPROFILE"))
+                     (format "%s/AppData/Local/Programs/Git/usr/bin" (getenv "USERPROFILE"))
+                     (format "%s/Git/usr/bin" (getenv "ProgramFiles"))
+                     (format "%s/Git/bin" (getenv "ProgramFiles"))))))
 
-(setq find-program (find-exe "find.exe")
-      grep-program (find-exe "grep.exe")
-      grep-use-null-device "/dev/null")
+(defun find-exe (exe)
+  (concat
+   (replace-regexp-in-string "\\\\" "/" (find-exe-path exe))
+   "/"
+   exe))
+
+;; NOTE: 当初 xxx-program にフルパスを指定していたが、
+;; 実行時に "C:\\Program " で切られてエラーになったので PATH に追加することにした。
+;; ※ "PROGRA~1" のように置き換えても実行時には展開されて同じ結果だった
+(let ((add-paths (cl-mapcar (lambda (exe) (find-exe-path exe))
+                            '("find.exe" "grep.exe"))))
+  (setenv "PATH" (concat (mapconcat 'identity (delete-dups add-paths) ";")
+                         ";"
+                         (getenv "PATH"))))
+
+(setq find-program "find.exe"
+      grep-program "grep.exe"
+      grep-use-null-device nil)
 
 (setq visible-bell t)
 
