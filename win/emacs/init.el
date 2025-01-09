@@ -235,6 +235,14 @@
   :mode (("\\.html\\'" . web-mode))
   :custom ((web-mode-markup-indent-offset . 2)))
 
+;; --- svelte --- ;;
+
+(leaf svelte-mode
+  :ensure t
+  ;; M-o 系のキーバインドを無効にする
+  :bind ((:svelte-mode-map
+          ("M-o" . nil))))
+
 ;; --- CSS --- ;;
 
 (leaf css-mode
@@ -393,14 +401,16 @@
 
 ;; ----- start server ----- ;;
 (server-start)
-(put 'dired-find-alternate-file 'disabled nil)
+
+;; ----- (auto generated) ----- ;;
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(breadcrumb idomenu rust-mode projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode bmemagit auto-complete)))
+   '(svelte-mode breadcrumb idomenu rust-mode projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode bmemagit auto-complete)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -409,3 +419,4 @@
  )
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
