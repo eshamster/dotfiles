@@ -898,7 +898,7 @@
                   ("bd" copilot-chat-del-current-buffer "delete current buffer")
                   ("bl" copilot-chat-list "buffer list"))
                  "Helper"
-                 (("e" coiplot-chat-explain "explain selected")
+                 (("e" copilot-chat-explain "explain selected")
                   ("f" copilot-chat-explain-defun "explain func")
                   ("wt" copilot-chat-test "write test")
                   ("wd" copilot-chat-document "write doc")
