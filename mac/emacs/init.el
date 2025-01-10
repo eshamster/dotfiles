@@ -29,7 +29,6 @@
                     company
                     company-go
                     go-errcheck ; require: go get -u github.com/kisielk/errcheck
-                    projectile
                     leaf
                     leaf-keywords
                     vue-mode
@@ -110,36 +109,33 @@
   :ensure t
   :init
   (leaf el-get :ensure t)
+  (leaf hydra :ensure t)
+  (leaf major-mode-hydra :ensure t)
   :config
   (leaf-keywords-init))
 
 ;; --- hydra --- ;;
 
-(defhydra hydra-common-replace (:hint nil :exit t :color blue)
-  "replace"
-  ("q" query-replace "query replace")
-  ("s" replace-string "replace string")
-  ("r" replace-regexp "replace regexp"))
-
 (leaf hydra
   :require t
+  :pretty-hydra ("Common"
+                 (("c" comment-region "comment")
+                  ("u" uncomment-region "uncomment")
+                  ("b" revert-buffer "revert buffer")
+                  ("e" flycheck-list-errors "show errors")
+                  ("i" idomenu "imenu as ido"))
+                 "Replace"
+                 (("rq" query-replace "query replace")
+                  ("rs" replace-string "replace string")
+                  ("rr" replace-regexp "replace regexp")))
   :bind
-  (("C-c :" . (defhydra hydra-common
-                (:hint nil :exit t :color blue)
-                "common"
-                ("c" comment-region "comment")
-                ("u" uncomment-region "uncomment")
-                ("b" revert-buffer "revert buffer")
-                ("e" flycheck-list-errors "flycheck list errors" )
-                ("r" hydra-common-replace/body ">replace")
-                ("i" idomenu "imenu as ido"))))
+  (("C-c :" . hydra/body))
   :config
   (setq hydra-is-helpful t))
 
 ;; --- magit --- ;;
 
 (leaf magit
-  :bind (("C-c g s" . magit-status))
   :custom
   ((magit-list-refs-sortby . "-creatordate")))
 
@@ -305,14 +301,20 @@
           (subword-mode prev-subword-mode))))))
 
 (leaf go-mode
+  :pretty-hydra ("Move"
+                 (("n" goto-go-next-func "next")
+                  ("p" goto-go-prev-func "prev"))
+                 "Edit"
+                 (("u" go-upcase-prev-word "upcase")
+                  ("l" go-downcase-prev-word "downcase"))
+                 "Copy"
+                 (("f" copy-go-function-name "copy function name"))
+                 "Find"
+                 (("t" go-find-test "find test")))
   :bind
   ((:go-mode-map
     ("M-[" . xref-find-references)
-    ("C-c c f" . copy-go-function-name)
-    ("C-c m n" . goto-go-next-func)
-    ("C-c m p" . goto-go-prev-func)
-    ("C-c c u" . go-upcase-prev-word)
-    ("C-c c l" . go-downcase-prev-word)))
+    ("C-c g" . go-mode/body)))
   :custom
   ((gofmt-command . "goimports")
    (c-basic-offset . 4)
@@ -380,14 +382,15 @@
 (leaf yasnippet
   :ensure t
   :diminish yas-minor-mode ; モードラインに非表示
-  :bind (("C-c y" . (defhydra hydra-yasnippet
-                      (:hint nil :exit t :color blue)
-                      "yasnippet"
-                      ("i" yas-insert-snippet "insert snippet")
-                      ("n" yas-new-snippet "new snippet")
-                      ("v" yas-visit-snippet-file "visit snippet file")
-                      ("l" yas-describe-tables "list")
-                      ("r" refresh-yas-minor-mode "refresh yas minor mode"))))
+  :pretty-hydra ("Insert"
+                 (("i" yas-insert-snippet "insert"))
+                 "Edit"
+                 (("n" yas-new-snippet "new")
+                  ("v" yas-visit-snippet-file "visit")
+                  ("l" yas-describe-tables "list"))
+                 "Others"
+                 (("r" refresh-yas-minor-mode "refresh")))
+  :bind (("C-c y" . yasnippet/body))
   :config
   (yas-global-mode 1)
   (setq yas-prompt-functions '(yas-ido-prompt)))
@@ -395,12 +398,14 @@
 ;; --- eglot --- ;;
 
 (leaf eglot
-  :bind (("C-c e" . (defhydra hydra-eglot
-                      (:hint nil :exit t :color blue)
-                      "eglot"
-                      ("r" xref-find-references "reference")
-                      ("s" eglot-rename "rename symbol")
-                      ("." xref-find-definitions "rename symbol")))))
+  :pretty-hydra ("Jump"
+                 (("r" xref-find-references "reference")
+                  ("." xref-find-definitions "definition"))
+                 "Refactor"
+                 (("s" eglot-rename "rename symbol"))
+                 "Others"
+                 (("c" eglot-reconnect "reconnect")))
+  :bind (("C-c e" . eglot/body)))
 
 (leaf flycheck-eglot
   :ensure t
@@ -430,12 +435,12 @@
         tide-server-max-response-length 204800))
 
 (leaf tide
-  :bind (("C-c t" . (defhydra hydra-tide
-                      (:hint nil :exit t :color blue)
-                      "tide"
-                      ("f" tide-fix "fix")
-                      ("r" tide-references "reference")
-                      ("s" tide-rename-symbol "rename symbol")))))
+  :pretty-hydra ("tide"
+                 (("f" tide-fix "fix")
+                  ("r" tide-references "reference")
+                  ("s" tide-rename-symbol "rename symbol")))
+  :bind ((:tide-mode-map
+          ("C-c t" . tide/body))))
 
 (defun setup-ts-eglot ()
   (eglot-ensure)
@@ -491,17 +496,16 @@
 (leaf eglot-java
   :ensure t
   :hook ((java-mode-hook . eglot-java-mode))
+  :pretty-hydra ("Common"
+                 (("n" eglot-java-file-new "new file")
+                  ("x" eglot-java-run-main "run main")
+                  ("t" eglot-java-run-test "run test"))
+                 "Project"
+                 (("N" eglot-java-project-new "new project")
+                  ("bt" eglot-java-project-build-task "build task")
+                  ("br" eglot-java-project-build-refresh "build refresh")))
   :bind ((eglot-java-mode-map
-          :package eglot-java-mode
-          ("C-c j" . (defhydra hydra-eglot-java
-                       (:hint nil :exit t :color blue)
-                       "eglot-java"
-                       ("n" eglot-java-file-new "new file")
-                       ("x" eglot-java-run-main "run main")
-                       ("t" eglot-java-run-test "run test")
-                       ("N" eglot-java-project-new "new project")
-                       ("T" eglot-java-project-build-task "build task")
-                       ("R" eglot-java-project-build-refresh "build refresh"))))))
+          ("C-c j" . eglot-java/body))))
 
 ;; --- PHP --- ;;
 
@@ -661,7 +665,9 @@
                 term-mode-hook
                 comint-mode-hook
                 compilation-mode-hook
-                minibuffer-setup-hook))
+                minibuffer-setup-hook
+                ;; https://github.com/abo-abo/hydra/issues/295
+                lv-window-hook))
   (add-hook hook
             (lambda () (setq show-trailing-whitespace nil))))
 
@@ -766,11 +772,27 @@
 ;; --- projectile --- ;;
 
 (leaf projectile
+  :ensure t
+  :require t
+  :pretty-hydra ("Open"
+                 (("f" projectile-find-file "find file")
+                  ("d" projectile-find-dir "find directory")
+                  ("D" projectile-dired "dired on root")
+                  ("b" projectile-switch-to-buffer "switch buffer")
+                  ("B" projectile-display-buffer "display buffer")
+                  ("r" projectile-recentf "recentf"))
+                 "Search"
+                 (("g" projectile-grep "grep")
+                  ("o" projectile-multi-occur "multi occur"))
+                 "Git"
+                 (("v" projectile-vc "magit"))
+                 "Others"
+                 (("p" projectile-switch-project "switch project")))
   :bind ((projectile-mode-map
-          ("C-c p" . projectile-command-map)))
+          ;; ("C-c p" . projectile-command-map)
+          ("C-c p" . projectile/body)))
   :init
-  (projectile-mode t)
-  :require t)
+  (projectile-mode t))
 
 ;; --- mermaid mode --- ;;
 
