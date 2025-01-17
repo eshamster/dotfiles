@@ -864,10 +864,9 @@
           ("C-c ;" . copilot-complete))
          (copilot-completion-map
           ("C-i" . copilot-accept-completion)
-          ("C-m" . (lambda ()
-                     (interactive)
-                     (copilot-accept-completion)
-                     (newline-and-indent)))
+          ("M-i" . indent-according-to-mode)
+          ("C-w" . copilot-accept-completion-by-word)
+          ("C-l" . copilot-accept-completion-by-line)
           ("M-n" . copilot-next-completion)
           ("M-p" . copilot-prev-completion)))
   :custom
