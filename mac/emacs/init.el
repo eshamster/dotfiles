@@ -484,9 +484,19 @@
 
 ;; --- Python --- ;;
 
-(leaf python-mode
+(leaf python
+  :bind ((python-mode-map
+          ("C-m" . (lambda ()
+                     (interactive)
+                     ;; カーソルの直前の文字が ")", ",", "}" の場合は改行前にインデント
+                     (when (string-match "[,)}]" (string (char-before)))
+                       (indent-for-tab-command))
+                     (newline-and-indent)))))
   :hook ((python-mode-hook . company-mode)
-         (python-mode-hook . flycheck-mode)))
+         (python-mode-hook . flycheck-mode))
+  :custom
+  ;; 開き確固直後に改行した際のインデントを1つ分にする (default: 2)
+  ((python-indent-def-block-scale . 1)))
 
 ;; --- Java --- ;;
 
@@ -874,6 +884,7 @@
   :hook ((go-mode-hook . copilot-mode)
          (emacs-lisp-mode-hook . copilot-mode)
          (web-mode-hook . copilot-mode)
+         (python-mode-hook . copilot-mode)
          (markdown-mode-hook . (lambda ()
                                  (copilot-mode t)
                                  ;; 一応ONにしてみたが余り役に立たないので明示的な補完のみにする
