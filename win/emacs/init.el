@@ -64,6 +64,9 @@
 (set-face-background 'line-number "#f0f0f0")
 ;; (setq linum-format "%4d \u2502 ")
 
+(savehist-mode 1) ; 各種履歴をEmacs終了後も残す
+(setq savehist-additional-variables '(register-alist))
+
 (defun find-exe-path (exe)
   (replace-regexp-in-string
    "/" "\\\\"
