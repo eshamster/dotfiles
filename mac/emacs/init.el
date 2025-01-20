@@ -63,7 +63,9 @@
         ("M-*" . pop-tag-mark)
         ("M-o" . other-window)
         ("C-c d" . insert-today)
-        ("C-c i" . insert-register)))
+        ("C-c i" . insert-register)
+        ;; list-buffers は使わないが良く押し間違えるので上書き
+        ("C-x C-b" . switch-to-buffer)))
 
 (defun insert-today ()
   (interactive)
