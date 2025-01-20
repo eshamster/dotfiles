@@ -16,8 +16,6 @@
 (install-packages '(auto-complete
                     magit
                     markdown-mode
-                    ido-vertical-mode
-                    smex
                     web-mode
                     ;; paredit
                     yasnippet
@@ -639,12 +637,8 @@
       ;; https://emacs.stackexchange.com/questions/45697/prevent-emacs-from-messaging-when-it-writes-recentf
       recentf-auto-save-timer (run-with-idle-timer (* 3 60) t 'recentf-save-list))
 
-(defun ido-recentf ()
-  (interactive)
-  (find-file (ido-completing-read "Find recent file: " recentf-list)))
-
-(global-set-key (kbd "C-c C-r") 'ido-recentf)
-(global-set-key (kbd "C-c r r") 'ido-recentf)
+(global-set-key (kbd "C-c C-r") 'recentf-open)
+(global-set-key (kbd "C-c r r") 'recentf-open)
 
 (recentf-mode 1)
 
@@ -734,29 +728,23 @@
   :config
   (setq avy-timeout-seconds 0.5))
 
-;; --- ido-mode --- ;;
+;; --- fido-vertical-mode --- ;;
 
-(leaf ido
-  :bind (("C-x C-f" . ido-find-file))
+(fido-vertical-mode +1)
+
+;; completion-styles が (flex) で上書きされてしまうのを阻止
+;; https://www.reddit.com/r/emacs/comments/13enmhl/comment/l1hfa29/
+(add-hook 'icomplete-minibuffer-setup-hook
+          (lambda () (kill-local-variable 'completion-styles)))
+
+(leaf orderless
+  :ensure t
+  :custom
+  ((completion-styles . '(orderless basic))
+   (completion-category-overrides . '((file (styles basic partial-completion)))))
   :config
-  (ido-mode t)
-  (ido-everywhere t)
-  (setq ido-enable-flex-matching t
-        ffap-machine-p-known 'reject
-        ido-use-filename-at-point nil
-        ;; https://stackoverflow.com/questions/17986194/emacs-disable-automatic-file-search-in-ido-mode
-        ido-auto-merge-work-directories-length -1))
-
-(leaf smex
-  :bind (("M-x" . smex)
-         ("M-X" . smex-major-mode-commands)))
-
-(leaf ido-vertical-mode
-  :require t
-  :setq ((ido-vertical-define-keys quote C-n-and-C-p-only)
-         (ido-max-window-height . 0.75))
-  :config
-  (ido-vertical-mode t))
+  ;; https://k1low.hatenablog.com/entry/2025/01/14/095141
+  (keymap-unset minibuffer-local-completion-map "SPC"))
 
 ;; --- ddskk --- ;;
 
