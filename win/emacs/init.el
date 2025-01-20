@@ -24,7 +24,6 @@
 (install-packages '(auto-complete
                     magit
                     markdown-mode
-                    paredit
                     ido-vertical-mode
                     smex
                     yasnippet
@@ -173,6 +172,17 @@
 (global-set-key (kbd "C-c r r") 'ido-recentf)
 
 (recentf-mode 1)
+
+;; paredit
+(leaf paredit
+  :ensure t
+  :bind ((paredit-mode-map
+          ("C-c f" . paredit-forward-slurp-sexp)
+          ("C-c b" . paredit-forward-barf-sexp)
+          ("C-h" . paredit-backward-delete)
+          ("C-M-p" . paredit-backward)
+          ("C-M-n" . paredit-forward)))
+  :hook ((emacs-lisp-mode-hook . enable-paredit-mode)))
 
 ;; --- company --- ;;
 
