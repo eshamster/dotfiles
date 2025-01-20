@@ -433,6 +433,36 @@
                   (svelte-mode 2)))
     (add-to-list 'copilot-indentation-alist pair)))
 
+(leaf copilot-chat
+  :ensure t
+  :pretty-hydra ("Basic"
+                 (("d" copilot-chat-display "display")
+                  ("s" copilot-chat-switch-to-buffer "switch to buffer")
+                  ("R" copilot-chat-reset "reset"))
+                 "Buffer"
+                 (("ba" copilot-chat-add-current-buffer "add current buffer")
+                  ("bd" copilot-chat-del-current-buffer "delete current buffer")
+                  ("bl" copilot-chat-list "buffer list"))
+                 "Helper"
+                 (("e" copilot-chat-explain "explain selected")
+                  ("f" copilot-chat-explain-defun "explain func")
+                  ("wt" copilot-chat-test "write test")
+                  ("wd" copilot-chat-document "write doc")
+                  ("wf" copilot-chat-fix "write fix")
+                  ("wo" copilot-chat-optimize "write optimized")
+                  ("rs" copilot-chat-review "review selected")
+                  ("rw" copilot-chat-review-whole-buffer "review whole custom"))
+                 "Magit"
+                 (("m" copilot-chat-insert-commit-message "insert commit message")))
+  :bind (;; NOTE: c, p 辺りは使っているので "AI" の a
+         ("C-c a" . copilot-chat/body))
+  :custom
+  ((copilot-chat-frontend . 'markdown)
+   (copilot-chat-prompt-suffix . "日本語で回答して\n")
+   (copilot-chat-prompt-test . "/tests 以下のコードのテストを作成して。テーブルテストの形式で書くこと。\n")
+   (copilot-chat-prompt-fix . "/fix どこを修正したかも解説して。\n")
+   (copilot-chat-prompt-review . "Please review the following code. 1. Show improvements as list. 2. Show improved codes as diff style while explaining which code relates to which improvement. Enclose diff sections in code blocks. 3. Show overall rating of the code from the BUD's point of view. ; Attentions: Don't show whole code. . Show only 'there is no required change' and overall rating if you find no improvements.\n")))
+
 ;; ----- start server ----- ;;
 (server-start)
 
