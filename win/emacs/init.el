@@ -26,7 +26,6 @@
                     markdown-mode
                     ido-vertical-mode
                     smex
-                    yasnippet
                     leaf
                     leaf-convert
                     company
@@ -107,13 +106,17 @@
   :ensure t
   :init
   (leaf el-get :ensure t)
+  (leaf hydra :ensure t)
+  (leaf major-mode-hydra :ensure t)
   :config
   (leaf-keywords-init))
 
 ;; -- ido-mode -- ;;
 
 (leaf ido
-  :bind (("C-x C-f" . ido-find-file))
+  :bind (("C-x C-f" . ido-find-file)
+         ;; NOTE: list-buffers は使わない割りに誤爆しがちなのでいっそ置き換える
+         ("C-x C-b" . ido-switch-buffer))
   :config
   (with-eval-after-load 'ido
     (ido-mode t)
@@ -192,7 +195,9 @@
            (company-selection-wrap-around . t))
   :bind ((:company-active-map
           ("C-n" . company-select-next)
-          ("C-p" . company-select-previous))))
+          ("M-n" . company-select-next)
+          ("C-p" . company-select-previous)
+          ("M-p" . company-select-previous))))
 
 ;; --- C# --- ;;
 
@@ -300,26 +305,44 @@
 
 (leaf yasnippet
   :ensure t
-  :bind ((:yas-minor-mode-map
-          ("C-c y i" . yas-insert-snippet)
-          ("C-c y n" . yas-new-snippet)
-          ("C-c y v" . yas-visit-snippet-file)
-          ("C-c y l" . yas-describe-tables)
-          ("C-c y g" . yas-reload-all)))
+  :pretty-hydra ("Insert"
+                 (("i" yas-insert-snippet "insert"))
+                 "Edit"
+                 (("n" yas-new-snippet "new")
+                  ("v" yas-visit-snippet-file "visit")
+                  ("l" yas-describe-tables "list")))
+  :bind (("C-c y" . yasnippet/body))
   :custom ((yas-global-mode . 1)
            (yas-prompt-functions . '(yas-ido-prompt))))
 
 ;; --- magit --- ;;
 
-(leaf magit
-  :bind (("C-c g s" . magit-status)))
+(leaf magit)
 
 ;; --- projectile -- ;;
 
 (leaf projectile
+  :require t
+  :pretty-hydra ("Open"
+                 (("f" projectile-find-file "find file")
+                  ("d" projectile-find-dir "find directory")
+                  ("D" projectile-dired "dired on root")
+                  ("b" projectile-switch-to-buffer "switch buffer")
+                  ("B" projectile-display-buffer "display buffer")
+                  ("r" projectile-recentf "recentf"))
+                 "Search"
+                 (("g" projectile-grep "grep")
+                  ("o" projectile-multi-occur "multi occur"))
+                 "Git"
+                 (("v" projectile-vc "magit"))
+                 "Others"
+                 (("p" projectile-switch-project "switch project")
+                  ("s" projectile-run-shell "run shell")))
+  :bind ((projectile-mode-map
+          ;; ("C-c p" . projectile-command-map)
+          ("C-c p" . projectile/body)))
   :config
-  (projectile-mode t)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (projectile-mode t))
 
 ;; ----- git-bash ----- ;;
 
@@ -375,7 +398,9 @@
                 term-mode-hook
                 comint-mode-hook
                 compilation-mode-hook
-                minibuffer-setup-hook))
+                minibuffer-setup-hook
+                ;; https://github.com/abo-abo/hydra/issues/295
+                lv-window-hook))
   (add-hook hook
             (lambda () (setq show-trailing-whitespace nil))))
 
@@ -399,7 +424,6 @@
           ("C-c ;" . copilot-complete))
          (copilot-completion-map
           ("C-i" . copilot-accept-completion)
-          ("C-m" . copilot-accept-completion)
           ("C-n" . copilot-next-completion)
           ("C-p" . copilot-prev-completion)))
   :config
@@ -420,7 +444,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(svelte-mode breadcrumb idomenu rust-mode projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode bmemagit auto-complete)))
+   '(major-mode-hydra hydra svelte-mode breadcrumb idomenu rust-mode projectile tide typescript-mode shader-modea shader-mode company omnisharp omnisharp-mode leaf-convert leaf yasnippet yasnipet yasnnipet ido-vertical-mode w3m smex paredit markdown-mode bmemagit auto-complete)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
