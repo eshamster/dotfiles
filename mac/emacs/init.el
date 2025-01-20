@@ -87,6 +87,9 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+(savehist-mode 1) ; 各種履歴をEmacs終了後も残す
+(setq savehist-additional-variables '(register-alist))
+
 ;; clock
 
 (setq display-time-string-forms
