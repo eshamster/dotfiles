@@ -134,11 +134,16 @@
   :config
   (setq hydra-is-helpful t))
 
-;; --- magit --- ;;
+;; --- git --- ;;
 
 (leaf magit
   :custom
   ((magit-list-refs-sortby . "-creatordate")))
+
+(leaf diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode))
 
 ;; --- tree-sitter --- ;;
 
