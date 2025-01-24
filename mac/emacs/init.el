@@ -76,9 +76,7 @@
 (set-face-foreground 'font-lock-comment-face "#ee0909")
 (show-paren-mode t)
 (tool-bar-mode 0)
-(if (>= emacs-major-version 29)
-    (global-display-line-numbers-mode 1)
-    (global-linum-mode t))
+(global-display-line-numbers-mode 1)
 (setq linum-delay t)
 (defadvice linum-schedule (around my-linum-schedule () activate)
   (run-with-idle-timer 0.2 nil #'linum-update-current))
@@ -166,8 +164,7 @@
 
 ;; --- tree-sitter --- ;;
 
-(when (>= emacs-major-version 29)
-  (require 'treesit))
+(require 'treesit)
 
 ;; --- perl --- ;;
 
@@ -459,6 +456,7 @@
         typescript-indent-level 2
         tide-server-max-response-length 204800))
 
+;; 基本は typescript-ts-mode を使うがフォールバックとして残しておく
 (leaf tide
   :pretty-hydra ("tide"
                  (("f" tide-fix "fix")
@@ -478,15 +476,12 @@
 ;; $ npm install -g typescript-language-server typescript
 ;; 言語用のdylibを下記からダウンロードして ~/.emacs.d/tree-sitter/ に配置
 ;; https://github.com/casouri/tree-sitter-module/releases
-(if (>= emacs-major-version 29)
-    (progn (when (not (treesit-language-available-p 'typescript))
-             (treesit-install-language-grammar 'typescript))
-           (add-hook 'typescript-ts-mode-hook #'setup-ts-eglot)
-           (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-ts-mode)))
-    (progn (add-hook 'typescript-mode-hook #'setup-tide-mode)
-           (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))))
+(when (not (treesit-language-available-p 'typescript))
+  (treesit-install-language-grammar 'typescript))
 
 (leaf typescript-ts-mode
+  :mode ("\\.tsx?\\'" "\\.jsx?\\'")
+  :hook ((typescript-ts-mode-hook . setup-ts-eglot))
   :custom
   ((company-idle-delay . 2)))
 
