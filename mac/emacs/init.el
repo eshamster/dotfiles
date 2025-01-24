@@ -91,16 +91,8 @@
 (setq savehist-additional-variables '(register-alist))
 
 ;; clock
-
-(setq display-time-string-forms
-      '((format "%s/%s(%s) %s:%s:%s" month day dayname 24-hours minutes seconds)
-        load
-        (if mail " Mail" "")))
-(setq display-time-kawakami-form t
-      display-time-24hr-format t
-      display-time-interval 1)
-
-(display-time)
+;; (モードラインの時計余り見たことないなと思ったのでdisable)
+(display-time-mode -1)
 
 ;; eww
 
