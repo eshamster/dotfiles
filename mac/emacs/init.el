@@ -539,7 +539,8 @@
 
 ;; --- PHP --- ;;
 
-
+;; NOTE: 復活させたい場合は削除commitの下記を参照
+;; b2eaafda3192b70d80cdfc811a9f895d071d2cc2
 
 ;; --- terraform --- ;;
 
