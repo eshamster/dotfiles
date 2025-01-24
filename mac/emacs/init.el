@@ -119,6 +119,9 @@
   :config
   (breadcrumb-mode 1))
 
+;; 起動時に最大化
+(set-frame-parameter nil 'fullscreen 'fullboth)
+
 ;; --- hydra --- ;;
 
 (leaf hydra
