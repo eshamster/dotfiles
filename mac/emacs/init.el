@@ -539,78 +539,7 @@
 
 ;; --- PHP --- ;;
 
-(leaf company-php
-  :ensure t
-  ;; ac-php-remake-tags-all はPHPファイル外 (.ac-php-conf.json) でも使うので事前にrequireしておく
-  ;; (実行場所を考えれば my-php-mode-setup の中のrequireで十分かも)
-  :require t)
 
-;; flycheck-phpstan が web-mode に対応していなかった...
-;; (leaf flycheck-phpstan
-;;   :ensure t)
-
-(defun indent-after (key)
-  (insert key)
-  (indent-for-tab-command))
-
-;; NOTE: defun では引数の "key" が lambda に渡らなかったので defmacro で定義。
-;; lexical-binding を有効にしても渡らなかったので
-;; 実行時にはバインディングの情報が消えていると思われる
-(defmacro make-indent-after (key)
-  `(lambda ()
-     (interactive)
-     (indent-after ,key)))
-
-;; https://qiita.com/tadsan/items/a76768439869f00a4e89
-(defun my-php-mode-setup ()
-  "My PHP-mode hook."
-  (subword-mode 1)
-  (setq show-trailing-whitespace t)
-
-  (setq-local page-delimiter "\\_<\\(class\\|function\\|namespace\\)\\_>.+$")
-
-  ;; TODO: (結局当面使うことはなさそうなので再度使う場合のメモ)
-  ;; ↓まだphp-modeは諦め切れない (HTML埋め込み以外のケースであれば使いたい) ので
-  ;; php-modeか否かで初期化処理を分岐させる
-
-  ;; phpcsもphp-modeのみ対応だった...
-  ;; (setq flycheck-phpcs-standard "PSR2")
-  ;; (flycheck-select-checker 'php-phpcs)
-
-  ;; (require 'flycheck-phpstan)
-  (flycheck-mode t)
-  ;; (flycheck-select-checker 'phpstan)
-  ;; (add-to-list 'flycheck-disabled-checkers 'php-phpmd)
-  ;;(add-to-list 'flycheck-disabled-checkers 'php-phpcs)
-
-  ;; https://github.com/xcwen/ac-php
-  (company-mode t)
-  (require 'company-php)
-  (ac-php-core-eldoc-setup)
-  (set (make-local-variable 'company-backends)
-       '((company-ac-php-backend company-dabbrev-code)
-         company-capf
-         company-files)))
-
-(defun my-php-hook-for-web-mode ()
-  (my-php-mode-setup)
-  (define-key web-mode-map (kbd "M-.") 'ac-php-find-symbol-at-point)
-  (define-key web-mode-map (kbd "M-*") 'ac-php-location-stack-back)
-  (define-key web-mode-map (kbd ";") (make-indent-after ";"))
-  (define-key web-mode-map (kbd "}") (make-indent-after "}")))
-
-;; NOTE: 純粋なPHPでは割りと良い感じに動くものの
-;; HTML埋め込みだと全くうまく動かないのでいったんweb-modeの方で色々できないか模索中
-;; (leaf php-mode
-;;   :ensure t
-;;   :hook ((php-mode . my-php-mode-setup))
-;;   :bind ((:php-mode-map
-;;           ("M-." . ac-php-find-symbol-at-point)
-;;           ("M-*" . ac-php-location-stack-back)))
-;;   :custom
-;;   ((php-manual-url . 'ja)
-;;    (php-mode-coding-style . 'psr2)
-;;    (php-mode-template-compatibility . nil)))
 
 ;; --- terraform --- ;;
 
