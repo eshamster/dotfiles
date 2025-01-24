@@ -109,6 +109,12 @@
   :config
   (leaf-keywords-init))
 
+;; minions: モードラインの minor-mode の表示を折り畳む
+(leaf minions
+  :ensure t
+  :config
+  (minions-mode 1))
+
 ;; --- hydra --- ;;
 
 (leaf hydra
