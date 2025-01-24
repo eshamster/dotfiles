@@ -113,6 +113,18 @@
   :config
   (minions-mode 1))
 
+(leaf dashboard
+  :doc "スタートアップ画面を良い感じにする"
+  :ensure t
+  :custom
+  ((dashboard-items . '((recents . 5)
+                        (projects . 5)
+                        (bookmarks . 5))))
+  :config
+  (dashboard-setup-startup-hook)
+  (require 'projectile)
+  (setq dashboard-projects-backend 'projectile))
+
 (leaf breadcrumb
   :doc "バッファトップにパンくずリストを表示する"
   :ensure t
