@@ -108,8 +108,8 @@
   :config
   (leaf-keywords-init))
 
-;; minions: モードラインの minor-mode の表示を折り畳む
 (leaf minions
+  :doc "モードラインの minor-mode の表示を折り畳む"
   :ensure t
   :config
   (minions-mode 1))
