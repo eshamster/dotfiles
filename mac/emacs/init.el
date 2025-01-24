@@ -37,7 +37,6 @@
                     diminish
                     hydra
                     idomenu
-                    breadcrumb
                     avy
                     leaf-convert
                     mermaid-mode))
@@ -113,6 +112,12 @@
   :ensure t
   :config
   (minions-mode 1))
+
+(leaf breadcrumb
+  :doc "バッファトップにパンくずリストを表示する"
+  :ensure t
+  :config
+  (breadcrumb-mode 1))
 
 ;; --- hydra --- ;;
 
