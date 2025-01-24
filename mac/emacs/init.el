@@ -33,7 +33,6 @@
                     bash-completion
                     git-link
                     yaml-mode
-                    terraform-mode
                     dockerfile-mode
                     diminish
                     hydra
@@ -598,6 +597,16 @@
 ;;    (php-mode-coding-style . 'psr2)
 ;;    (php-mode-template-compatibility . nil)))
 
+;; --- terraform --- ;;
+
+(leaf terraform-mode
+  :ensure t)
+
+(leaf company-terraform
+  :ensure t
+  :config
+  (company-terraform-init))
+
 ;; --- Others --- ;;
 
 ;; mode-line
@@ -881,6 +890,7 @@
          (emacs-lisp-mode-hook . copilot-mode)
          (web-mode-hook . copilot-mode)
          (python-mode-hook . copilot-mode)
+         (terraform-mode-hook . copilot-mode)
          (markdown-mode-hook . (lambda ()
                                  (copilot-mode t)
                                  ;; 一応ONにしてみたが余り役に立たないので明示的な補完のみにする
@@ -942,7 +952,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode terraform-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(terraform mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
