@@ -1,3 +1,6 @@
+;; NOTE: In Windows, create link as the following on Git bash.
+;; $ ln $(pwd)/mac/emacs/init.el $(realpath ${APPDATA})/.emacs.d/init.el
+
 (when (require 'package nil t)
   (add-to-list 'package-archives
                '("melpa" . "https://melpa.org/packages/") t))
