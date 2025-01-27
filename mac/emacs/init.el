@@ -996,8 +996,9 @@
 
 ;; --- start server --- ;;
 
-(unless (server-running-p)
-  (server-start))
+(leaf server
+  (unless (server-running-p)
+    (server-start)))
 
 ;; --- auto generated --- ;;
 
