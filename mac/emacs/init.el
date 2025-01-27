@@ -716,6 +716,15 @@
   :config
   (setq avy-timeout-seconds 0.5))
 
+;; 終了時にshellの終了は確認しない
+;; NOTE: https://emacs.stackexchange.com/questions/24330/have-a-function-to-disable-close-confirmation-on-terms-work-on-all-terms-but-sh
+(defun set-no-process-query-on-exit ()
+  (let ((proc (get-buffer-process (current-buffer))))
+    (when (processp proc)
+      (set-process-query-on-exit-flag proc nil))))
+
+(add-hook 'shell-mode-hook 'set-no-process-query-on-exit)
+
 ;; --- fido-vertical-mode --- ;;
 
 (fido-vertical-mode +1)
