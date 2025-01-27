@@ -39,13 +39,14 @@
                     leaf-convert
                     mermaid-mode))
 
-(exec-path-from-shell-initialize)
-(bash-completion-setup)
-
 ;; OS判定用
 (defconst IS-MAC (eq system-type 'darwin))
 (defconst IS-LINUX (memq system-type '(gnu gnu/linux gnu/kfreebsd berkeley-unix)))
 (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
+
+(unless IS-WINDOWS
+  (exec-path-from-shell-initialize))
+(bash-completion-setup)
 
 ;; --- keybind --- ;;
 
@@ -276,8 +277,9 @@
 
 ;; --- go --- ;;
 
-(let ((envs '("GOROOT" "GOPATH")))
-  (exec-path-from-shell-copy-envs envs))
+(when IS-MAC
+  (let ((envs '("GOROOT" "GOPATH")))
+    (exec-path-from-shell-copy-envs envs)))
 
 (defun copy-go-function-name ()
   (interactive)
@@ -507,7 +509,8 @@
 ;; $ npm install -g typescript-language-server typescript
 ;; 言語用のdylibを下記からダウンロードして ~/.emacs.d/tree-sitter/ に配置
 ;; https://github.com/casouri/tree-sitter-module/releases
-(when (not (treesit-language-available-p 'typescript))
+(when (and IS-MAC
+		   (not (treesit-language-available-p 'typescript)))
   (treesit-install-language-grammar 'typescript))
 
 (leaf typescript-ts-mode
