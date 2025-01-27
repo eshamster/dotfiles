@@ -15,9 +15,7 @@
 
 (install-packages '(auto-complete
                     magit
-                    markdown-mode
                     web-mode
-                    ;; paredit
                     yasnippet
                     flycheck
                     powerline
@@ -44,10 +42,15 @@
 (exec-path-from-shell-initialize)
 (bash-completion-setup)
 
+;; OS判定用
+(defconst IS-MAC (eq system-type 'darwin))
+(defconst IS-LINUX (memq system-type '(gnu gnu/linux gnu/kfreebsd berkeley-unix)))
+(defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
+
 ;; --- keybind --- ;;
 
 (mapc #'(lambda (pair)
-         (global-set-key (kbd (car pair)) (cdr pair)))
+          (global-set-key (kbd (car pair)) (cdr pair)))
       '(("M-g"  . goto-line)
         ("C-h"  . delete-backward-char)
         ("C-z"  . nil)
@@ -61,7 +64,8 @@
         ("C-c d" . insert-today)
         ("C-c i" . insert-register)
         ;; list-buffers は使わないが良く押し間違えるので上書き
-        ("C-x C-b" . switch-to-buffer)))
+        ("C-x C-b" . switch-to-buffer)
+        ("C-c C-w" . count-words)))
 
 (defun insert-today ()
   (interactive)
@@ -80,6 +84,8 @@
 (setq linum-delay t)
 (defadvice linum-schedule (around my-linum-schedule () activate)
   (run-with-idle-timer 0.2 nil #'linum-update-current))
+(set-face-foreground 'line-number "#448844")
+(set-face-background 'line-number "#f0f0f0")
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -129,8 +135,13 @@
   :config
   (breadcrumb-mode 1))
 
-;; 起動時に最大化
-(set-frame-parameter nil 'fullscreen 'fullboth)
+;; 起動時の画面サイズ調整
+(cond (IS-MAC
+       (set-frame-parameter nil 'fullscreen 'fullboth))
+      (IS-WINDOWS
+       (setq initial-frame-alist
+             '((top . 83) (left . 178) (width . 175) (height . 54)))))
+
 
 ;; --- hydra --- ;;
 
@@ -263,7 +274,7 @@
                     ;; (modify-syntax-entry ?_ "-")
                 )))
 
-;; - go - ;;
+;; --- go --- ;;
 
 (let ((envs '("GOROOT" "GOPATH")))
   (exec-path-from-shell-copy-envs envs))
@@ -359,7 +370,7 @@
 (add-hook 'my-tmpl-mode-hook 'my-tmpl-mode)
 
 
-;; - protobuf - ;;
+;; --- protobuf --- ;;
 
 (defun format-protobuf-hook ()
   (when (eq major-mode 'protobuf-mode)
@@ -371,6 +382,18 @@
   :custom
   ((c-basic-offset . 2)
    (require-final-newline . t)))
+
+;; --- Rust --- ;;
+
+(leaf eglot
+  :hook ((eglot-managed-mode-hook . (lambda () (eglot-inlay-hints-mode -1)))))
+
+(leaf rust-mode
+  :ensure t
+  :hook ((rust-mode-hook . eglot-ensure)
+         (rust-mode-hook . company-mode)
+         (rust-mode-hook . flycheck-mode))
+  :custom ((rust-format-on-save . t)))
 
 ;; --- arkテンプレート用 --- ;;
 
@@ -393,6 +416,14 @@
   :hook ((vue-mode-hook . company-mode))
   :pre-setq ((js-indent-level . 2))
   :require t)
+
+;; --- svelte --- ;;
+
+(leaf svelte-mode
+  :ensure t
+  ;; M-o 系のキーバインドを無効にする
+  :bind ((:svelte-mode-map
+          ("M-o" . nil))))
 
 ;; --- yasnippet --- ;;
 
@@ -578,7 +609,7 @@
 
 ;; Note: "ls" of OS X doesn't support some options.
 ;;       So use gls instead (require "brew install coreutils")
-(when (and (eq system-type 'darwin))
+(when IS-MAC
   (let ((gls "/opt/homebrew/bin/gls"))
     (when (file-exists-p gls)
       (setq insert-directory-program gls))))
@@ -706,28 +737,31 @@
 ;; --- ddskk --- ;;
 
 (leaf ddskk
+  ;; NOTE: AquaSKK がうまく動かないのでMacでのみddskkを有効化
+  :if IS-MAC
   :bind
   (("C-x C-j" . skk-mode))
   :hook
   (find-file-hooks . (lambda () (skk-latin-mode 1)))
   (git-commit-setup-hook . (lambda () (skk-latin-mode 1))))
 
-(when (fboundp 'skk-mode)
-  (fset 'ido-select-text 'skk-mode))
+(when IS-MAC
+  (when (fboundp 'skk-mode)
+    (fset 'ido-select-text 'skk-mode))
 
-;; https://gist.github.com/nagae/1354329/cddf65aa89bb52f31434ba1164434a31517fc3c8
-(add-hook 'isearch-mode-hook
-          #'(lambda ()
-              (when (and (boundp 'skk-mode)
-                         skk-mode
-                         skk-isearch-mode-enable)
-                (skk-isearch-mode-setup))))
+  ;; https://gist.github.com/nagae/1354329/cddf65aa89bb52f31434ba1164434a31517fc3c8
+  (add-hook 'isearch-mode-hook
+            #'(lambda ()
+                (when (and (boundp 'skk-mode)
+                           skk-mode
+                           skk-isearch-mode-enable)
+                  (skk-isearch-mode-setup))))
 
-(add-hook 'isearch-mode-end-hook
-          #'(lambda ()
-              (when (and (featurep 'skk-isearch)
-                         skk-isearch-mode-enable)
-                (skk-isearch-mode-cleanup))))
+  (add-hook 'isearch-mode-end-hook
+            #'(lambda ()
+                (when (and (featurep 'skk-isearch)
+                           skk-isearch-mode-enable)
+                  (skk-isearch-mode-cleanup)))))
 
 ;; --- projectile --- ;;
 
@@ -740,7 +774,8 @@
                   ("D" projectile-dired "dired on root")
                   ("b" projectile-switch-to-buffer "switch buffer")
                   ("B" projectile-display-buffer "display buffer")
-                  ("r" projectile-recentf "recentf"))
+                  ("r" projectile-recentf "recentf")
+                  ("s" projectile-run-shell "run shell"))
                  "Search"
                  (("g" projectile-grep "grep")
                   ("o" projectile-multi-occur "multi occur"))
@@ -786,6 +821,40 @@
   :hook ((emacs-lisp-mode-hook . enable-paredit-mode)
          (slime-mode-hook . enable-paredit-mode)
          (slime-repl-mode-hook . enable-paredit-mode)))
+
+;; --- markdown --- ;;
+
+(defun my/split-markdown-code ()
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      ;; FIXME: 開始マーク横のコード種別を取り出しているが、存在しない場合は省略する必要がある
+      (search-backward "```")
+      (call-interactively 'move-end-of-line)
+      (call-interactively 'set-mark-command)
+      (call-interactively 'backward-word)
+      (call-interactively 'kill-ring-save)))
+  (insert (format "```\n\n\n\n```"))
+  (insert (car kill-ring-yank-pointer))
+  (call-interactively 'previous-line)
+  (call-interactively 'previous-line))
+
+(leaf markdown-mode
+  :pretty-hydra ("Edit"
+                 (("b" my/markdown-insert-bold "bold"))
+                 "Outline Nav"
+                 (("n" markdown-outline-next "next")
+                  ("p" markdown-outline-previous "prev")
+                  ("u" markdown-outline-up "up (parent)"))
+                 "Content Move"
+                 (("mp" markdown-move-up "move up")
+                  ("mn" markdown-move-down "move down"))
+                 "Code"
+                 (("s" my/split-markdown-code "split codeblock"))
+                 "Misc"
+                 (("tl" markdown-toggle-url-hiding "toggle url hiding")))
+  :bind ((:markdown-mode-map
+          ("C-c m" . markdown-mode/body))))
 
 ;; --- obsidian --- ;;
 
@@ -836,6 +905,8 @@
          (web-mode-hook . copilot-mode)
          (python-mode-hook . copilot-mode)
          (terraform-mode-hook . copilot-mode)
+         (rust-mode-hook . copilot-mode)
+         (svelte-mode-hook . copilot-mode)
          (markdown-mode-hook . (lambda ()
                                  (copilot-mode t)
                                  ;; 一応ONにしてみたが余り役に立たないので明示的な補完のみにする
@@ -845,7 +916,8 @@
   (dolist (pair '((go-mode 4)
                   (markdown-mode 4)
                   (emacs-lisp-mode 2)
-                  (web-mode 2)))
+                  (web-mode 2)
+                  (svelte-mode 2)))
     (add-to-list 'copilot-indentation-alist pair)))
 
 (leaf copilot-chat
@@ -885,6 +957,48 @@
   (js-jsx-mode)
   (setq js-indent-level 2))
 
+;; --- for windows --- ;;
+
+(when IS-WINDOWS
+  (defun find-exe-path (exe)
+    (replace-regexp-in-string
+     "/" "\\\\"
+     (cl-find-if (lambda (dir) (file-exists-p (format "%s/%s" dir exe)))
+                 (list (format "%s/AppData/Local/Programs/Git/bin" (getenv "USERPROFILE"))
+                       (format "%s/AppData/Local/Programs/Git/usr/bin" (getenv "USERPROFILE"))
+                       (format "%s/Git/usr/bin" (getenv "ProgramFiles"))
+                       (format "%s/Git/bin" (getenv "ProgramFiles"))))))
+
+  (defun find-exe (exe)
+    (concat
+     (replace-regexp-in-string "\\\\" "/" (find-exe-path exe))
+     "/"
+     exe))
+
+  ;; NOTE: 当初 xxx-program にフルパスを指定していたが、
+  ;; 実行時に "C:\\Program " で切られてエラーになったので PATH に追加することにした。
+  ;; ※ "PROGRA~1" のように置き換えても実行時には展開されて同じ結果だった
+  (let ((add-paths (cl-mapcar (lambda (exe) (find-exe-path exe))
+                              '("find.exe" "grep.exe"))))
+    (setenv "PATH" (concat (mapconcat 'identity (delete-dups add-paths) ";")
+                           ";"
+                           (getenv "PATH"))))
+
+  (setq find-program "find.exe"
+        grep-program "grep.exe"
+        grep-use-null-device nil)
+
+  ;; M-x shell で git-bash を開く
+  ;; https://qastack.jp/emacs/22049/git-bash-in-emacs-on-windows
+  (prefer-coding-system 'utf-8)
+  (setq explicit-shell-file-name (find-exe "bash.exe"))
+  (setq explicit-bash.exe-args '("--login" "-i")))
+
+;; --- start server --- ;;
+
+(unless (server-running-p)
+  (server-start))
+
 ;; --- auto generated --- ;;
 
 (custom-set-variables
@@ -897,7 +1011,7 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(terraform mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex markdown-mode magit auto-complete ddskk)))
+   '(terraform mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex magit auto-complete ddskk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
