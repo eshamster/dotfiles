@@ -885,8 +885,22 @@
 (leaf obsidian
   :ensure t
   :require t
+  :pretty-hydra ("Jump"
+                 (("f" obsidian-follow-link-at-point "follow link")
+                  ("b" obsidian-backlink-jump "backlink jump")
+                  ("t" obsidian-tag-find "tag find")
+                  ("j" obsidian-jump "jump by name"))
+                 "Search"
+                 (("s" obsidian-search "search"))
+                 "Insert"
+                 (("w" obsidian-insert-wikilink "wikilink")
+                  ("l" obsidian-insert-link "link"))
+                 "Others"
+                 (("u" obsidian-update "update links")))
   :bind ((obsidian-mode-map
-          ("C-c o" . obsidian-hydra/body)
+          ;; obsidian-backlink-jump がなかったりと一部気に入らなかったので自前で用意する
+          ;; ("C-c o" . obsidian-hydra/body)
+          ("C-c o" . obsidian/body)
           ("M-." . obsidian-follow-link-at-point)
           ;; NOTE: 元のページに戻るをいったん簡易的に。
           ;; しばらく使って今いちなら自分で履歴を管理する
@@ -895,9 +909,11 @@
   (;; This directory will be used for `obsidian-capture' if set.
    (obsidian-inbox-directory . "Inbox")
    ;; The directory for daily notes (file name is YYYY-MM-DD.md)
-   (obsidian-daily-notes-directory . "Daily Notes"))
+   (obsidian-daily-notes-directory . "daily")
+   ;; リンク挿入時にルートからの相対パスを使う (デフォルトはファイル名のみ)
+   (obsidian-links-use-vault-path . t))
   :config
-  (obsidian-specify-path "~/Google Drive/マイドライブ/Obsidian/main")
+  (obsidian-change-vault "~/GDrive/Obsidian/main")
   (global-obsidian-mode t))
 
 ; --- copilot --- ;;
