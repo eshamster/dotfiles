@@ -742,6 +742,8 @@
 
 ;; completion-styles が (flex) で上書きされてしまうのを阻止
 ;; https://www.reddit.com/r/emacs/comments/13enmhl/comment/l1hfa29/
+;; https://github.com/emacs-mirror/emacs/blob/1f4a26df862917c956e79fc2ca111caebf895623/lisp/icomplete.el#L454
+;; https://ayatakesi.github.io/emacs/29.4/html/Icomplete.html
 (add-hook 'icomplete-minibuffer-setup-hook
           (lambda () (kill-local-variable 'completion-styles)))
 
