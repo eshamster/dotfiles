@@ -245,7 +245,11 @@
 (leaf web-mode
   :mode ("\\.mt\\'" "\\.html\\'" "\\.php\\'")
   :hook ((web-mode-hook . my-web-mode-hook))
-  :setq ((web-mode-enable-auto-expanding . t)))
+  :setq ((web-mode-enable-auto-expanding . t))
+  :custom
+  ((web-mode-markup-indent-offset . 2)
+   (web-mode-code-indent-offset . 2)
+   (web-mode-script-padding . 0)))
 
 ;; - company - ;;
 (leaf company-mode
