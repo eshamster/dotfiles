@@ -918,18 +918,28 @@
 
 ; --- copilot --- ;;
 
+(defconst MY-COPILOT-IDLE-DELAY 0.1)
+
+(defun my/copilot-toggle-auto-complete ()
+  (interactive)
+  (cond (copilot-idle-delay
+         (message "copilot auto-complete is disabled")
+         (setq copilot-idle-delay nil))
+        (t
+         (message "copilot auto-complete is enabled")
+         (setq copilot-idle-delay MY-COPILOT-IDLE-DELAY))))
+
 ;; https://github.com/copilot-emacs/copilot.el
 ;; https://zenn.dev/lecto/articles/dad1d04c0605a1
 (leaf copilot
-  :el-get (copilot
-           :type github
-           :pkgname "copilot-emacs/copilot.el")
+  :ensure t
   :init
   (leaf editorconfig :ensure t)
   (leaf s :ensure t)
   (leaf dash :ensure t)
   :bind ((copilot-mode-map
-          ("C-c ;" . copilot-complete))
+          ("C-c ;" . copilot-complete)
+          ("C-c +" . my/copilot-toggle-auto-complete))
          (copilot-completion-map
           ("C-i" . copilot-accept-completion)
           ("M-i" . indent-according-to-mode)
@@ -938,8 +948,9 @@
           ("M-n" . copilot-next-completion)
           ("M-p" . copilot-prev-completion)))
   :custom
-  ((copilot-idle-delay . 0.1))
+  ((copilot-idle-delay . MY-COPILOT-IDLE-DELAY))
   :hook ((go-mode-hook . copilot-mode)
+         (sh-mode-hook . copilot-mode)
          (emacs-lisp-mode-hook . copilot-mode)
          (web-mode-hook . copilot-mode)
          (python-mode-hook . copilot-mode)
@@ -961,6 +972,8 @@
 
 (leaf copilot-chat
   :ensure t
+  :init
+  (leaf copilot :ensure t)
   :pretty-hydra ("Basic"
                  (("d" copilot-chat-display "display")
                   ("s" copilot-chat-switch-to-buffer "switch to buffer")
@@ -979,7 +992,9 @@
                   ("rs" copilot-chat-review "review selected")
                   ("rw" copilot-chat-review-whole-buffer "review whole custom"))
                  "Magit"
-                 (("m" copilot-chat-insert-commit-message "insert commit message")))
+                 (("m" copilot-chat-insert-commit-message "insert commit message"))
+                 "Copilot"
+                 (("cd" copilot-diagnose "diagnose")))
   :bind (;; NOTE: c, p 辺りは使っているので "AI" の a
          ("C-c a" . copilot-chat/body))
   :custom
@@ -1057,7 +1072,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(shadow ((t (:foreground "DodgerBlue3")))))
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
