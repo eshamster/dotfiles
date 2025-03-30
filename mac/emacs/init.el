@@ -876,7 +876,8 @@
                  "Misc"
                  (("tl" markdown-toggle-url-hiding "toggle url hiding")))
   :bind ((:markdown-mode-map
-          ("C-c m" . markdown-mode/body))))
+          ("C-c m" . markdown-mode/body)))
+  :custom ((markdown-hide-urls . t)))
 
 ;; --- obsidian --- ;;
 
