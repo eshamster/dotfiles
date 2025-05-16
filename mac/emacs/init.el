@@ -249,7 +249,9 @@
   :custom
   ((web-mode-markup-indent-offset . 2)
    (web-mode-code-indent-offset . 2)
-   (web-mode-script-padding . 0)))
+   (web-mode-css-indent-offset . 2))
+  :init
+  (setq web-mode-script-padding (if IS-MAC 0 2)))
 
 ;; - company - ;;
 (leaf company-mode
@@ -477,11 +479,6 @@
 ;; --- TypeScript --- ;;
 ;; https://github.com/eshamster/dotfiles/blob/f5a39c71b013ade45048add19db4998b1cdfd62a/others/react-devel/react-devel.el
 
-(install-packages '(typescript-mode
-                    tide
-                    company
-                    flycheck))
-
 (defun setup-tide-mode ()
   "Setup function for tide."
   (interactive)
@@ -496,14 +493,24 @@
         typescript-indent-level 2
         tide-server-max-response-length 204800))
 
-;; 基本は typescript-ts-mode を使うがフォールバックとして残しておく
+;; NOTE: Windowsでtypescript-ts-modeの設定がうまくいかないので
+;; typescript-mode + tideを使う
 (leaf tide
+  :if IS-WINDOWS
+  :ensure t
   :pretty-hydra ("tide"
                  (("f" tide-fix "fix")
                   ("r" tide-references "reference")
                   ("s" tide-rename-symbol "rename symbol")))
   :bind ((:tide-mode-map
           ("C-c t" . tide/body))))
+
+(leaf typescript-mode
+  :if IS-WINDOWS
+  :mode ("\\.tsx?\\'" "\\.jsx?\\'")
+  :hook ((typescript-mode-hook . setup-tide-mode))
+  :custom
+  ((company-idle-delay . 2)))
 
 (defun setup-ts-eglot ()
   (eglot-ensure)
@@ -521,6 +528,7 @@
   (treesit-install-language-grammar 'typescript))
 
 (leaf typescript-ts-mode
+  :if IS-MAC
   :mode ("\\.tsx?\\'" "\\.jsx?\\'")
   :hook ((typescript-ts-mode-hook . setup-ts-eglot))
   :custom
@@ -541,7 +549,9 @@
                     (eglot-ensure)
                     (company-mode +1)
                     (flycheck-mode +1)
-                    (flycheck-add-mode 'javascript-eslint))))
+                    ;; エラーになるので一時退避。TODO: 修正
+                    ;; (flycheck-add-mode 'javascript-eslint)
+                    )))
 
 ;; --- Python --- ;;
 
@@ -966,7 +976,8 @@
    ;; リンク挿入時にルートからの相対パスを使う (デフォルトはファイル名のみ)
    (obsidian-links-use-vault-path . t))
   :config
-  (obsidian-change-vault "~/GDrive/Obsidian/main")
+  (cond (IS-MAC
+         (obsidian-change-vault "~/GDrive/Obsidian/main")))
   (global-obsidian-mode t))
 
 ; --- copilot --- ;;
