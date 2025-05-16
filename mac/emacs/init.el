@@ -156,7 +156,7 @@
                   ("u" uncomment-region "uncomment")
                   ("b" revert-buffer "revert buffer")
                   ("e" flycheck-list-errors "show errors")
-                  ("i" idomenu "imenu as ido"))
+                  ("i" my/imenu "flat imenu"))
                  "Replace"
                  (("rq" query-replace "query replace")
                   ("rs" replace-string "replace string")
@@ -735,6 +735,59 @@
       (set-process-query-on-exit-flag proc nil))))
 
 (add-hook 'shell-mode-hook 'set-no-process-query-on-exit)
+
+;; imenu の表示が階層構造になっているがフラットに表示したいので my/imenu を実装
+(defun my/imenu ()
+  "Display a flat list of imenu items with category prefixes."
+  (interactive)
+  (let ((items nil)
+        (index-alist (imenu--make-index-alist t)))
+    (cl-labels ((flatten (alist prefix)
+                  (dolist (item alist)
+                    (let* ((name (car item))
+                           (pos-or-sub (cdr item)))
+                      (cond
+                       ;; サブメニューの場合は再帰的に処理
+                       ((imenu--subalist-p item)
+                        (flatten pos-or-sub
+                                (if prefix (format "%s/%s" prefix name) name)))
+                       ;; 項目リストの場合
+                       ((listp pos-or-sub)
+                        (dolist (subitem pos-or-sub)
+                          (when (consp subitem)
+                            (let ((subname (car subitem))
+                                  (subpos (cdr subitem)))
+                              (when (or (markerp subpos) (numberp subpos))
+                                (push (cons (format "%s/%s"
+                                                   (or prefix name)
+                                                   subname)
+                                           subpos)
+                                      items))))))
+                       ;; 単一項目の場合
+                       ((or (markerp pos-or-sub) (numberp pos-or-sub))
+                        (push (cons (if prefix
+                                       (format "%s/%s" prefix name)
+                                     name)
+                                   pos-or-sub)
+                              items)))))))
+      ;; トップレベル項目の処理
+      (dolist (item index-alist)
+        (unless (or (null (car item))
+                    (string= (car item) "*Rescan*"))
+          (if (imenu--subalist-p item)
+              (flatten (cdr item) (car item))
+            (when (or (numberp (cdr item)) (markerp (cdr item)))
+              (push item items))))))
+
+    (setq items (nreverse items))
+    (let* ((selected (completing-read "Go to: "
+                                     (mapcar #'car items) nil t))
+           (position (cdr (assoc selected items))))
+      (when position
+        (push-mark)
+        (imenu-default-goto-function nil position)))))
+
+
 
 ;; --- fido-vertical-mode --- ;;
 
