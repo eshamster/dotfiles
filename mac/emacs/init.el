@@ -941,7 +941,7 @@
   :pretty-hydra ("Jump"
                  (("f" obsidian-follow-link-at-point "follow link")
                   ("b" obsidian-backlink-jump "backlink jump")
-                  ("t" obsidian-tag-find "tag find")
+                  ("t" obsidian-find-tag "tag find")
                   ("j" obsidian-jump "jump by name"))
                  "Search"
                  (("s" obsidian-search "search"))
