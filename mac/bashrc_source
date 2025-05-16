@@ -19,6 +19,10 @@ function gb() {
     git branch --show-current
 }
 
+function gr() {
+    git rev-parse --show-toplevel
+}
+
 function GB() {
     gb
 }
@@ -89,7 +93,7 @@ function __prompt_command() {
     if [ $EXIT -eq 0 ]; then
         okng=""
     else
-        okng="${red} NG! | ${r_col} "
+        okng="${red} --- NG --- | ${r_col} "
     fi
 
     local branch=$(git branch --show-current 2> /dev/null)
@@ -123,7 +127,10 @@ function remind() {
 }
 
 alias doco='docker compose'
-alias dlogs='docker compose logs --tail 10 -f'
+
+function dlogs() {
+    docker compose logs --tail 10 -f $* | ggrep --color -iE 'url|error|warn|\.go[^a-z]|----|'
+}
 
 function duplogs() {
     local target=$1
