@@ -1010,6 +1010,8 @@
          (terraform-mode-hook . copilot-mode)
          (rust-mode-hook . copilot-mode)
          (svelte-mode-hook . copilot-mode)
+         (protobuf-mode-hook . copilot-mode)
+         (makefile-mode-hook . copilot-mode)
          (markdown-mode-hook . (lambda ()
                                  (copilot-mode t)
                                  ;; 一応ONにしてみたが余り役に立たないので明示的な補完のみにする
@@ -1055,7 +1057,8 @@
    (copilot-chat-prompt-suffix . "日本語で回答して\n")
    (copilot-chat-prompt-test . "/tests 以下のコードのテストを作成して。テーブルテストの形式で書くこと。\n")
    (copilot-chat-prompt-fix . "/fix どこを修正したかも解説して。\n")
-   (copilot-chat-prompt-review . "Please review the following code. 1. Show improvements as list. 2. Show improved codes as diff style while explaining which code relates to which improvement. Enclose diff sections in code blocks. 3. Show overall rating of the code from the BUD's point of view. ; Attentions: Don't show whole code. . Show only 'there is no required change' and overall rating if you find no improvements.\n")))
+   (copilot-chat-prompt-review . "Please review the following code. 1. Show improvements as list. 2. Show improved codes as diff style while explaining which code relates to which improvement. Enclose diff sections in code blocks. 3. Show overall rating of the code from the BUD's point of view. ; Attentions: Don't show whole code. . Show only 'there is no required change' and overall rating if you find no improvements.\n")
+   (copilot-chat-prompt-explain . "/explain 以下のコードについて日本語で説明してください。\n")))
 
 ;; --- for project --- ;;
 
