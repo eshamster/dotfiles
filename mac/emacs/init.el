@@ -1139,7 +1139,15 @@
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
  '(package-selected-packages
-   '(terraform mermaid-mode leaf-convert avy breadcrumb breadcrumb-mode idomenu leaf-keywords diminish hydra highlight-indentation csv-mode dockerfile-mode tide typescript-mode jsonnet-mode git-link bash-completion leaf graphql-mode projectile yaml-mode ido-vertical-mode markdowne-mode go-errcheck eglot powerline csharp-mode vue-mode dired-sidebar flycheck yasnippet use-package web-mode japanese-holidays smex magit auto-complete ddskk)))
+   '(auto-complete avy bash-completion breadcrumb company-go
+                   company-terraform copilot copilot-chat dashboard
+                   diff-hl diminish dockerfile-mode eglot-java el-get
+                   exec-path-from-shell flycheck-eglot flymake-go
+                   git-link go-errcheck idomenu leaf-convert magit
+                   major-mode-hydra mermaid-mode minions obsidian
+                   orderless paredit powerline projectile
+                   protobuf-mode rust-mode slime-company svelte-mode
+                   tide vue-mode web-mode yaml-mode yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
