@@ -1036,6 +1036,8 @@
                   (svelte-mode 2)))
     (add-to-list 'copilot-indentation-alist pair)))
 
+;; require
+;; npm install -g @github/copilot-language-server
 (leaf copilot-chat
   :ensure t
   :init
