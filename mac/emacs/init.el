@@ -1123,6 +1123,10 @@
   (unless (server-running-p)
     (server-start)))
 
+;; --- load custom.el if exist --- ;;
+
+(load "~/.emacs.d/site-lisp/my-custom.el" t)
+
 ;; --- auto generated --- ;;
 
 (custom-set-variables
