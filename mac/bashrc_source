@@ -158,8 +158,7 @@ export LANG=ja_JP.UTF-8
 
 # go
 function ec() {
-    local path=${1:-"./..."}
-    local result=$(errcheck ${path} 2>&1)
+    local result=$(errcheck $* 2>&1)
 
     if echo "${result}" | grep -q "error: failed to check packages"; then
         echo "${result}" | \
