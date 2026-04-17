@@ -314,7 +314,8 @@
       (call-interactively 'set-mark-command)
       (search-forward "(")
       (backward-char)
-      (call-interactively 'kill-ring-save))))
+      (call-interactively 'kill-ring-save)
+      (message (car kill-ring-yank-pointer)))))
 
 (defun go-find-test (test-name dir)
   (interactive "sTest Name: \nDBase directory: ")
