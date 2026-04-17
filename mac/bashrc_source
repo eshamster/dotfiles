@@ -205,6 +205,16 @@ function fh() {
     $(tac ~/.bash_history | fzf)
 }
 
+function fcd() {
+    local dir_list="${HOME}/.fcd_list"
+    if [ ! -f "${dir_list}" ]; then
+        touch "${dir_list}"
+    fi
+    local dir=$(cat "${dir_list}" | fzf)
+    local dir=$(echo "${dir}" | sed -e "s|^~|${HOME}|")
+    cd "${dir}"
+}
+
 # python
 
 function check_pyenv() {
