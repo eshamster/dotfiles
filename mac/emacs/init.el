@@ -23,7 +23,6 @@
                     flycheck
                     powerline
                     exec-path-from-shell
-                    protobuf-mode
                     flymake-go
                     company
                     company-go
@@ -389,7 +388,11 @@
     (revert-buffer t t t)))
 
 (leaf protobuf-mode
+  :ensure t
   :hook ((after-save-hook . format-protobuf-hook))
+  :bind ((:protobuf-mode-map
+          ;; globlaな設定が上書きされるので再設定
+          ("C-c C-z" . open-shell-buffer)))
   :custom
   ((c-basic-offset . 2)
    (require-final-newline . t)))
