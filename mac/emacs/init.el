@@ -970,7 +970,7 @@
   :ensure t
   :require t
   :pretty-hydra ("Jump"
-                 (("f" obsidian-follow-link-at-point "follow link")
+                 (("f" obsidian-follow-wiki-link-at-point "follow link")
                   ("b" obsidian-backlink-jump "backlink jump")
                   ("t" obsidian-find-tag "tag find")
                   ("j" obsidian-jump "jump by name"))
@@ -985,7 +985,7 @@
           ;; obsidian-backlink-jump がなかったりと一部気に入らなかったので自前で用意する
           ;; ("C-c o" . obsidian-hydra/body)
           ("C-c o" . obsidian/body)
-          ("M-." . obsidian-follow-link-at-point)
+          ("M-." . obsidian-follow-wiki-link-at-point)
           ;; NOTE: 元のページに戻るをいったん簡易的に。
           ;; しばらく使って今いちなら自分で履歴を管理する
           ("M-*" . switch-to-prev-buffer)))
