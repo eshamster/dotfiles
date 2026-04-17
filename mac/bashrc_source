@@ -113,7 +113,11 @@ function __prompt_command() {
 
     local aws_profile=""
     if [ -n "${AWS_PROFILE}" ]; then
-        aws_profile=" <${AWS_PROFILE}>"
+        if [[ "${AWS_PROFILE}" =~ pro?d ]]; then
+            aws_profile=" ${red}<${AWS_PROFILE}>${r_col}"
+        else
+            aws_profile=" <${AWS_PROFILE}>"
+        fi
     fi
 
     PS1="${title}[${okng}\w${branch}${aws_profile}]${newline}$ "
