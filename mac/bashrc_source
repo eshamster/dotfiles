@@ -104,13 +104,19 @@ function __prompt_command() {
     # iTerm のタブタイトル用
     local title=""
     local newline=""
-    if [ -n "${branch}" -a "${TERM_PROGRAM:-}" = "iTerm.app" ]; then
+    # TERM_PROGRAM が空 = Emacs 上で開いた M-x shell
+    if [ -n "${branch}" -a "${TERM_PROGRAM:-}" != "" ]; then
         title="\033]0;$(basename $(git rev-parse --show-toplevel))\007"
         # ↑を入れると同一行の表示が不安定なので改行を入れる
         newline="\n"
     fi
 
-    PS1="${title}[${okng}\w${branch}]${newline}$ "
+    local aws_profile=""
+    if [ -n "${AWS_PROFILE}" ]; then
+        aws_profile=" <${AWS_PROFILE}>"
+    fi
+
+    PS1="${title}[${okng}\w${branch}${aws_profile}]${newline}$ "
 }
 
 function remind() {
