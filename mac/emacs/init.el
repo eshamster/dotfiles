@@ -255,7 +255,7 @@
          (my-php-hook-for-web-mode))))
 
 (leaf web-mode
-  :mode ("\\.mt\\'" "\\.html\\'" "\\.php\\'")
+  :mode ("\\.mt\\'" "\\.html\\'" "\\.php\\'" "\\.vue\\'")
   :hook ((web-mode-hook . my-web-mode-hook))
   :setq ((web-mode-enable-auto-expanding . t))
   :custom
@@ -439,10 +439,13 @@
 
 ;; --- vue-mode --- ;;
 
-(leaf vue-mode
-  :hook ((vue-mode-hook . company-mode))
-  :pre-setq ((js-indent-level . 2))
-  :require t)
+;; NOTE: ハイライト類が微妙なのでいったんweb-modeを使うことにする
+;; (leaf vue-mode
+;;   :hook ((vue-mode-hook . company-mode))
+;;   :pre-setq ((js-indent-level . 2))
+;;   :bind ((:vue-mode-map
+;;           ("M-o" . other-window)))
+;;   :require t)
 
 ;; --- svelte --- ;;
 
