@@ -1036,8 +1036,12 @@
                   (svelte-mode 2)))
     (add-to-list 'copilot-indentation-alist pair)))
 
-;; require
-;; npm install -g @github/copilot-language-server
+;; NOTE:
+;; - emacs 30.2 on mac (installed by "brew install --cask emacs")
+;;   polymode, aio の2パッケージは dependencies としてインストールされているように見えたにもかかわらず
+;;   list-packages から手動でインストールする必要があった
+;; - 下記が必要
+;;   npm install -g @github/copilot-language-server
 (leaf copilot-chat
   :ensure t
   :init
@@ -1127,6 +1131,14 @@
 
 (load "~/.emacs.d/site-lisp/my-custom.el" t)
 
+;; --- load custom-packages.el --- ;;
+
+;; list-packages が自動で編集する package-selected-packages 変数を別ファイルに分ける
+;; https://extra-vision.blogspot.com/2016/10/emacs25-package-selected-packages.html
+(setq custom-file (expand-file-name "custom-packages.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; --- auto generated --- ;;
 
 (custom-set-variables
@@ -1138,16 +1150,18 @@
  '(cperl-indent-level 4 t)
  '(cperl-indent-parens-as-block t t)
  '(cperl-indent-subs-specially nil t)
- '(package-selected-packages
-   '(auto-complete avy bash-completion breadcrumb company-go
-                   company-terraform copilot copilot-chat dashboard
-                   diff-hl diminish dockerfile-mode eglot-java el-get
-                   exec-path-from-shell flycheck-eglot flymake-go
-                   git-link go-errcheck idomenu leaf-convert magit
-                   major-mode-hydra mermaid-mode minions obsidian
-                   orderless paredit powerline projectile
-                   protobuf-mode rust-mode slime-company svelte-mode
-                   tide vue-mode web-mode yaml-mode yasnippet)))
+ ;; TODO: Windows 側で custom-packages.el に移す作業が終わったら削除する
+ ;; '(package-selected-packages
+ ;;   '(auto-complete avy bash-completion breadcrumb company-go
+ ;;                   company-terraform copilot copilot-chat dashboard
+ ;;                   diff-hl diminish dockerfile-mode eglot-java el-get
+ ;;                   exec-path-from-shell flycheck-eglot flymake-go
+ ;;                   git-link go-errcheck idomenu leaf-convert magit
+ ;;                   major-mode-hydra mermaid-mode minions obsidian
+ ;;                   orderless paredit powerline projectile
+ ;;                   protobuf-mode rust-mode slime-company svelte-mode
+ ;;                   tide vue-mode web-mode yaml-mode yasnippet))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
