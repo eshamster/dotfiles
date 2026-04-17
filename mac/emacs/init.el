@@ -653,7 +653,10 @@
 
 (setq dired-listing-switches "-alh --group-directories-first")
 
-(ffap-bindings)
+;; find-file-at-point の動作が気に入らない
+;; (C-x C-f でカーソル下のファイル/URLを開いて欲しいと思ったことがない) ので無効化。
+;; そもそも何に困って入れた設定か覚えていないのでいったんコメントアウトで残しておく
+;; (ffap-bindings)
 
 ;; recentf
 (setq recentf-max-saved-items 10000
@@ -812,7 +815,6 @@
       (when position
         (push-mark)
         (imenu-default-goto-function nil position)))))
-
 
 
 ;; --- fido-vertical-mode --- ;;
