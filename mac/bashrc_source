@@ -115,15 +115,23 @@ function __prompt_command() {
 
 function remind() {
     # brew install terminal-notifier
-    if [ $# -eq 0 ]; then
+    if [ "$1" = "-h" ]; then
         echo "help: ${FUNCNAME[0]} <wait seconds> [<message...>]"
         return
     fi
-    sleep_time=$1
+    sleep_time=${1:-0}
     shift
-    message="${*:-remind}"
+    message="$(gdate '+%T'): ${*:-remind}"
 
-    (sleep ${sleep_time} ; echo "${message}" | terminal-notifier) &
+    if [ "{sleep_time}" = "0" ]; then
+        echo "${message}" | terminal-notifier
+    else
+        (sleep ${sleep_time} ; echo "${message}" | terminal-notifier) &
+    fi
+}
+
+function with_remind() {
+    $* && remind 0 success || remind 0 failure
 }
 
 alias doco='docker compose'
