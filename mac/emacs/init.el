@@ -31,7 +31,6 @@
                     leaf-keywords
                     vue-mode
                     bash-completion
-                    git-link
                     yaml-mode
                     dockerfile-mode
                     diminish
@@ -175,6 +174,20 @@
   :ensure t
   :config
   (global-diff-hl-mode))
+
+(defun my/git-link-master ()
+  (interactive)
+  (let ((git-link-default-branch "master"))
+    (call-interactively 'git-link)))
+
+(defun my/git-link-open-master ()
+  (interactive)
+  (let ((git-link-default-branch "master")
+        (git-link-open-in-browser t))
+    (call-interactively 'git-link)))
+
+(leaf git-link
+  :ensure t)
 
 ;; --- tree-sitter --- ;;
 
