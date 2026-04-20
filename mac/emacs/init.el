@@ -144,7 +144,6 @@
        (setq initial-frame-alist
              '((top . 83) (left . 178) (width . 175) (height . 54)))))
 
-
 ;; --- hydra --- ;;
 
 (leaf hydra
@@ -168,7 +167,8 @@
 
 (leaf magit
   :custom
-  ((magit-list-refs-sortby . "-creatordate")))
+  ((magit-list-refs-sortby . "-creatordate")
+   (magit-refresh-status-buffer . nil)))
 
 (leaf diff-hl
   :ensure t
@@ -964,6 +964,20 @@
           ("C-c m" . markdown-mode/body)))
   :custom ((markdown-hide-urls . t)))
 
+;; --- quick-save-and-close-mode --- ;;
+
+(require 'markdown-mode)
+(define-derived-mode quick-save-and-close-mode markdown-mode "QuickSave"
+  "Minor mode for quickly saving and closing a buffer."
+  (define-key quick-save-and-close-mode-map (kbd "C-c C-c")
+              (lambda ()
+                (interactive)
+                (save-buffer)
+                (kill-buffer))))
+
+(add-to-list 'auto-mode-alist '("claude-prompt-.*\\.md\\'" . quick-save-and-close-mode))
+(add-to-list 'auto-mode-alist '("COMMIT_EDITMSG\\'" . quick-save-and-close-mode))
+
 ;; --- obsidian --- ;;
 
 ;; https://github.com/licht1stein/obsidian.el?tab=readme-ov-file#installation
@@ -1151,9 +1165,7 @@
 
 ;; --- start server --- ;;
 
-(leaf server
-  (unless (server-running-p)
-    (server-start)))
+(server-start)
 
 ;; --- load custom.el if exist --- ;;
 
