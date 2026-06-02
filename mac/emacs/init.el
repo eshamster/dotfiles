@@ -665,7 +665,7 @@
 ;; recentf
 (setq recentf-max-saved-items 10000
       recentf-auto-cleanup 'never
-      recentf-exclude '("/recentf" "COMMIT_EDITING" "/.?TAGS" "ido\\.last")
+      recentf-exclude '("/recentf" "COMMIT_EDITING" "/.?TAGS" "ido\\.last" "^/tmp/claude.*")
       ;; https://emacs.stackexchange.com/questions/45697/prevent-emacs-from-messaging-when-it-writes-recentf
       recentf-auto-save-timer (run-with-idle-timer (* 3 60) t 'recentf-save-list))
 
