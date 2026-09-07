@@ -973,6 +973,7 @@
               (lambda ()
                 (interactive)
                 (save-buffer)
+                (kill-ring-save (point-min) (point-max))
                 (kill-buffer))))
 
 (add-to-list 'auto-mode-alist '("claude-prompt-.*\\.md\\'" . quick-save-and-close-mode))
