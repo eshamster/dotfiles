@@ -608,6 +608,42 @@
   :bind ((eglot-java-mode-map
           ("C-c j" . eglot-java/body))))
 
+;; --- C# --- ;;
+
+;; require:
+;; $ dotnet tool install --global csharp-ls
+;; ~/.dotnet/tools にPATHが通っている必要がある (bashrc_source で設定)
+;;
+;; NOTE: eglot標準では omnisharp → csharp-ls の順で探すため、
+;; 環境によらず csharp-ls を使うよう明示的に指定する
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((csharp-mode csharp-ts-mode) . ("csharp-ls"))))
+
+;; NOTE: grammarのABIが上がるとEmacsが読めなくなるためタグを固定する
+;; (Emacs 30.2が読めるのはABI 13〜15。v0.23.5はABI 15)
+(add-to-list 'treesit-language-source-alist
+             '(c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "v0.23.5"))
+
+(when (and IS-MAC
+           (not (treesit-language-available-p 'c-sharp)))
+  (treesit-install-language-grammar 'c-sharp))
+
+;; NOTE: csharp-mode.el が auto-mode-alist に登録するのは csharp-mode のみで、
+;; grammarがあっても .cs は csharp-ts-mode にならないため明示的にremapする
+(when (treesit-language-available-p 'c-sharp)
+  (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
+
+;; grammarが無い環境では csharp-mode にフォールバックするので両方にhookする
+(leaf csharp-mode
+  :hook ((csharp-mode-hook . eglot-ensure)
+         (csharp-mode-hook . company-mode)
+         (csharp-mode-hook . subword-mode)
+         (csharp-ts-mode-hook . eglot-ensure)
+         (csharp-ts-mode-hook . company-mode)
+         (csharp-ts-mode-hook . subword-mode))
+  :custom ((csharp-ts-mode-indent-offset . 4)))
+
 ;; --- PHP --- ;;
 
 ;; NOTE: 復活させたい場合は削除commitの下記を参照
