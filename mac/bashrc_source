@@ -231,6 +231,11 @@ EOF
 # php
 export PATH="$HOME/.composer/vendor/bin:$PATH"
 
+# dotnet (C#)
+# csharp-ls などの global tool 用
+# $ dotnet tool install --global csharp-ls
+export PATH="$HOME/.dotnet/tools:$PATH"
+
 # aws cli の補完を有効にする
 if command -v aws_completer 2>&1 /dev/null; then
     complete -C "$(which aws_completer)" aws
