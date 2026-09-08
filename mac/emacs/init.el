@@ -634,6 +634,23 @@
 (when (treesit-language-available-p 'c-sharp)
   (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
 
+;; NOTE: 1つのgitリポジトリに複数のソリューションがあると、csharp-ls は
+;; そのうち1つしか読み込まず、他のソリューション配下では定義ジャンプも
+;; 参照検索も効かない。そこで .sln/.slnx のあるディレクトリを
+;; C#のプロジェクトルートとみなし、ソリューション単位で起動させる。
+(defun csharp-project-try-solution (dir)
+  "DIRから上に辿り、.sln/.slnx を含むディレクトリをプロジェクトルートとして返す。"
+  (when (derived-mode-p 'csharp-mode)
+    (when-let* ((root (locate-dominating-file
+                       dir
+                       (lambda (d) (directory-files d nil "\\.slnx?\\'" t)))))
+      (cons 'transient (expand-file-name root)))))
+
+(leaf project
+  :require t
+  :config
+  (add-hook 'project-find-functions #'csharp-project-try-solution))
+
 ;; grammarが無い環境では csharp-mode にフォールバックするので両方にhookする
 (leaf csharp-mode
   :hook ((csharp-mode-hook . eglot-ensure)
