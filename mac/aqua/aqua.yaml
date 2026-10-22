@@ -20,4 +20,4 @@ packages:
 - name: direnv/direnv@v2.36.0
 - name: homeport/dyff@v1.10.1
 - name: go-task/task@v3.45.4
-- name: golang/go@go1.26.2
+- name: golang/go@go1.27.3
